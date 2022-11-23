@@ -1,0 +1,21 @@
+FROM debian:latest
+MAINTAINER Heitor Gouvêa <hi@heitorgouvea.me>
+
+EXPOSE 8001
+
+COPY . /usr/src/waffle
+WORKDIR /usr/src/waffle
+
+RUN apt -qy update \
+    && apt list --upgradable \
+    && apt -qy upgrade \
+    && apt install -qy curl \
+                      make \
+                      gcc \
+                      perl \
+    && apt clean \
+  	&& apt -y autoremove
+
+RUN cpan install Mojolicious::Lite
+
+CMD ["perl", "application.pl", "daemon", "-m", "production", "-l", "http://*:8001"]
