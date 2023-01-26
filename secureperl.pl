@@ -21,8 +21,8 @@ sub main {
  	    my $list_rules = $yamlfile -> [0];
         my $files      = Path::Iterator::Rule -> new($source) -> file() -> not_empty();
     
-        # $files -> skip_dirs(".git") -> file();
-        # $files -> name("*.pl", "*.pm", "*.t");
+        $files -> skip_dirs(".git") -> file();
+        $files -> name("*.pl", "*.pm", "*.t");
 
         for my $file ($files -> all(@ARGV)) {
             my $resources = Mojo::File -> new($file);

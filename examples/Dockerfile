@@ -1,5 +1,4 @@
 FROM debian:latest
-MAINTAINER Heitor Gouvêa <hi@heitorgouvea.me>
 
 EXPOSE 8001
 
