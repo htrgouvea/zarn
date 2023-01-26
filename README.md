@@ -23,7 +23,7 @@
 $ git clone https://github.com/htrgouvea/secureperl && cd secureperl
     
 # Install libs and dependencies
-$ sudo cpan install Perl::Critic Path::Iterator::Rule
+$ sudo cpan install Path::Iterator::Rule
 ```
 ---
 
@@ -36,19 +36,6 @@ $ sudo cpan install Perl::Critic Path::Iterator::Rule
 ### Using with Github Actions
 
 ```yaml
-name: secureperl
-on: [push]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v1
-    - name: Audit code
-      run: |
-        sudo apt install -y libpath-iterator-rule-perl libtest-perl-critic-perl 
-        curl https://raw.githubusercontent.com/htrgouvea/secureperl/main/secureperl.pl | perl
 ```
 
 ### Contribution
@@ -61,8 +48,8 @@ jobs:
 
 - This work is licensed under [MIT License.](/LICENSE.md)
 
+--- 
 
 ### References
 
 1. [https://en.wikipedia.org/wiki/Static_program_analysis](https://en.wikipedia.org/wiki/Static_program_analysis)
-2. [https://metacpan.org/pod/Perl::Critic](https://metacpan.org/pod/Perl::Critic)
