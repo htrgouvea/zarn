@@ -5,7 +5,6 @@
   sample:
     - Data::Dumper
     - Devel::Graph
-    - "PPI::"
     - Devel::StackTrace
 - id: '0002'
   category: vuln
