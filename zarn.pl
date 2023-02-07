@@ -4,9 +4,10 @@ use 5.018;
 use strict;
 use warnings;
 use YAML::Tiny;
+use lib "./lib/";
 use Getopt::Long;
+use Zarn::Files;
 use PPI::Document;
-use File::Find::Rule;
 use Data::Dumper;
 
 sub main {
@@ -25,17 +26,8 @@ sub main {
 
     my $yamlfile   = YAML::Tiny -> read($rules);
  	my $list_rules = $yamlfile -> [0];
-    my $rule       = File::Find::Rule -> new();
-
-    $rule -> or (
-        $rule -> new -> directory -> name(".git", $ignore) -> prune -> discard,
-        $rule -> new
-    );
-
-    $rule -> file() -> nonempty();
-    $rule -> name("*.pm", "*.t", "*.pl");
-
-    my @files = $rule -> in($source);
+    
+    my @files = Zarn::Files -> new($source, $ignore);
 
     for my $file (@files) {
         my $document = PPI::Document -> new($file);
