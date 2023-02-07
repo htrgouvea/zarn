@@ -1,8 +1,8 @@
 FROM perl:5.36
 
-COPY . /usr/src/secureperl
-WORKDIR /usr/src/secureperl
+COPY . /usr/src/zarn
+WORKDIR /usr/src/zarn
 
 RUN cpanm --installdeps .
 
-ENTRYPOINT [ "perl", "./secureperl.pl" ]
+ENTRYPOINT [ "perl", "./zarn.pl" ]

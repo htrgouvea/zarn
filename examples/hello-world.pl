@@ -7,7 +7,7 @@ use warnings;
 sub main {
     my $name = $ARGV[0];
 
-    system("echo Hello World, $name !\n");
+    system("echo Hello World!\n");
     
 }
 

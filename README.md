@@ -1,5 +1,5 @@
 <p align="center">
-  <p align="center">SECUREPERL</p>
+  <p align="center"><b>ZARN</b></p>
   <p align="center">A lightweight static code security analysis for Modern Perl Applications</p>
   <p align="center">
     <a href="/LICENSE.md">
@@ -20,7 +20,7 @@
 
 ```bash
 # Download
-$ git clone https://github.com/htrgouvea/secureperl && cd secureperl
+$ git clone https://github.com/htrgouvea/zarn && cd zarn
     
 # Install libs and dependencies
 $ sudo cpan install Path::Iterator::Rule

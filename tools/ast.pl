@@ -20,24 +20,24 @@ sub main {
 
         $dumper -> print();
 
-        # $document -> prune("PPI::Token::Whitespace");
+        foreach my $token (@{$document -> find("PPI::Token")}) {
+            # print $token -> class() . "-> " . $token -> content() . "\n";
 
-        # my $find = PPI::Find -> new($document);
+            if ($token -> class() eq "PPI::Statement") {
+                # print $token -> content();
+            }
 
-        foreach my $comments (@{$document -> find("PPI::Token")}) {
-            # print $comments -> content();
+
+            # PPI::Token::Word             -> syntax
+            # if have "PPI::Token::Symbol" -> variable
+            #    - verify hard coded credentials
+            #    - verify if this is present in a string (PPI::Token::Quote::Double)
+
+            # PPI::Token::Quote::Double     -> string -> need run AST again
         }
-
-        # PPI::Token::Word             -> syntax
-        # if have "PPI::Token::Symbol" -> variable
-        #    - verify hard coded credentials
-        #    - verify if this is present in a string (PPI::Token::Quote::Double)
-        
-        # PPI::Token::Quote::Double     -> string -> need run AST again
-
     }
 
     return 0;
 } 
 
-print main();
+main();

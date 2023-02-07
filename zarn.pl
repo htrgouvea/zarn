@@ -46,7 +46,7 @@ sub main {
         foreach my $token (@{$document -> find("PPI::Token")}) {
             # if ($token -> class() eq "PPI::Token::Quote::Double") {
             #     # check if this is a sink function
-            # } 
+            # }
 
             foreach my $rule (@{$list_rules}) {
                 my $sample   = $rule -> {sample} -> [0];
@@ -54,6 +54,8 @@ sub main {
                 my $title    = $rule -> {name};
 
                 if (grep {$_ =~ m/$sample/} $token -> content()) {
+                    # print Dumper($token); # follow the three and find synk
+
                     print "[$category] - FILE:$file \t Potential: $title.\n";
                 }
             }

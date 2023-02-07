@@ -13,4 +13,4 @@ jobs:
         sudo cpanm --installdeps .
     - name: Verify the basic usage
       run: |
-        perl secureperl.pl -r rules/quick-wins.yml -s .
+        perl zarn.pl -r rules/quick-wins.yml -s .
