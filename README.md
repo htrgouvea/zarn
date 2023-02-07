@@ -5,6 +5,9 @@
     <a href="/LICENSE.md">
       <img src="https://img.shields.io/badge/license-MIT-blue.svg">
     </a>
+     <a href="https://github.com/htrgouvea/zarn/releases">
+      <img src="https://img.shields.io/badge/version-0.0.1-blue.svg">
+    </a>
   </p>
 </p>
 
