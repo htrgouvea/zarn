@@ -42,22 +42,3 @@ get "*" => sub ($request) {
 };
 
 app -> start();
-
-
-
-
-
-
-    # url
-        # base
-            # scheme
-            # host
-            # port
-        # path
-            # path
-        # query 
-            # string
-    
-
-    # $request -> req -> content -> headers
-    # $request -> req -> content -> 
