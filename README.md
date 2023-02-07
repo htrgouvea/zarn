@@ -30,6 +30,12 @@ $ sudo cpan install Path::Iterator::Rule
 ### Example of use
 
 ```bash
+$ perl zarn.pl --rules rules/quick-wins.yml --source ../nozaki 
+
+[warn] - FILE:../nozaki/lib/Functions/Helper.pm          Potential: Timing Attack.
+[vuln] - FILE:../nozaki/lib/Engine/Orchestrator.pm       Potential: Path Traversal.
+[vuln] - FILE:../nozaki/lib/Engine/Orchestrator.pm       Potential: Path Traversal.
+[warn] - FILE:../nozaki/lib/Engine/FuzzerThread.pm       Potential: Timing Attack.
 ```
 ---
 
