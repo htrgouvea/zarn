@@ -3,9 +3,9 @@
   name: Debug module enabled
   message:
   sample:
-    - Data::Dumper
-    - Devel::Graph
-    - Devel::StackTrace
+    - Dumper
+    # - Devel::Graph
+    # - Devel::StackTrace
 - id: '0002'
   category: vuln
   name: Remote Command Execution // Code Injection
@@ -32,9 +32,9 @@
   message: 
   sample:
     - md5
-- id: '0006'
-  category: vuln
-  name: Hard-coded Credentials
-  message:
-  sample:
-    - password
+# - id: '0006'
+#   category: vuln
+#   name: Hard-coded Credentials
+#   message:
+#   sample:
+#     - password
