@@ -44,6 +44,7 @@ sub main {
                 if (grep {my $content = $_; scalar(grep {$content =~ m/$_/} @sample)} $token -> content()) {
                     my $next_element = $token -> snext_sibling;
 
+                    # this is a draft source-to-sink function
                     if (defined $next_element && ref $next_element && $next_element -> content =~ /\$/) {
                         print "[$category] - FILE:$file \t Potential: $title.\n";
                     }

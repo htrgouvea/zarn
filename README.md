@@ -26,7 +26,7 @@
 $ git clone https://github.com/htrgouvea/zarn && cd zarn
     
 # Install libs and dependencies
-$ sudo cpan install Path::Iterator::Rule
+$ sudo cpanm --installdeps .
 ```
 ---
 
@@ -42,9 +42,31 @@ $ perl zarn.pl --rules rules/quick-wins.yml --source ../nozaki
 ```
 ---
 
+### Rules example
+
+```yaml
+- id: '0001'
+  category: vuln
+  name: Remote Command Execution // Code Injection
+  message: 
+  sample:
+    - system
+    - eval
+    - exec
+- id: '0002'
+  category: vuln
+  name: Path Traversal
+  message: 
+  sample:
+    - open
+```
+
+---
+
 ### Using with Github Actions
 
 ```yaml
+Coming soon...
 ```
 
 ---
