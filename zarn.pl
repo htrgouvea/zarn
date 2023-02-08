@@ -37,14 +37,13 @@ sub main {
 
         foreach my $token (@{$document -> find("PPI::Token")}) {
             foreach my $rule (@{$list_rules}) {
-                my $sample   = $rule -> {sample} -> [0];
+                my @sample   = $rule -> {sample} -> @*;
                 my $category = $rule -> {category};
                 my $title    = $rule -> {name};
 
-                if (grep {$_ =~ m/$sample/} $token -> content()) {
+                if (grep {my $content = $_; scalar(grep {$content =~ m/$_/} @sample)} $token -> content()) {
                     my $next_element = $token -> snext_sibling;
-                    
-                    # this verify is just a draft
+
                     if (defined $next_element && ref $next_element && $next_element -> content =~ /\$/) {
                         print "[$category] - FILE:$file \t Potential: $title.\n";
                     }
