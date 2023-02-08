@@ -36,19 +36,18 @@ sub main {
         $document -> prune("PPI::Token::Comment");
 
         foreach my $token (@{$document -> find("PPI::Token")}) {
-            # if ($token -> class() eq "PPI::Token::Quote::Double") {
-            #     # check if this is a sink function
-            # }
-
             foreach my $rule (@{$list_rules}) {
                 my $sample   = $rule -> {sample} -> [0];
                 my $category = $rule -> {category};
                 my $title    = $rule -> {name};
 
                 if (grep {$_ =~ m/$sample/} $token -> content()) {
-                    # print Dumper($token); # follow the three and find synk
-
-                    print "[$category] - FILE:$file \t Potential: $title.\n";
+                    my $next_element = $token -> snext_sibling;
+                    
+                    # this verify is just a draft
+                    if (defined $next_element && ref $next_element && $next_element -> content =~ /\$/) {
+                        print "[$category] - FILE:$file \t Potential: $title.\n";
+                    }
                 }
             }
         }
