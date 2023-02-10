@@ -2,7 +2,7 @@ package Zarn::Files {
     use strict;
     use warnings;
     use File::Find::Rule;
-
+    
     sub new {
         my ($self, $source, $ignore) = @_;
 
@@ -22,7 +22,7 @@ package Zarn::Files {
             return @files;
         }
 
-        return 1;
+        return 0;
     }
 }
 
