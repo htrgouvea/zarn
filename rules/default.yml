@@ -1,0 +1,12 @@
+---
+rules:
+  - id: 1
+    category: vuln
+    name: Code Injection
+    sample:
+      - system
+  - id: 2
+    category: info
+    name: Debug
+    sample:
+      - Dumper
