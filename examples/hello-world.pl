@@ -1,5 +1,5 @@
-#!/usr/bin/ern perl
-
+#!/usr/bin/perl
+ 
 use 5.018;
 use strict;
 use warnings;
@@ -7,7 +7,7 @@ use warnings;
 sub main {
     my $name = $ARGV[0];
 
-    system("echo Hello World $name!\n");    
+    system ("echo Hello World! $name");
 }
 
-main();
+exit main();
