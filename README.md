@@ -6,7 +6,7 @@
       <img src="https://img.shields.io/badge/license-MIT-blue.svg">
     </a>
      <a href="https://github.com/htrgouvea/zarn/releases">
-      <img src="https://img.shields.io/badge/version-0.0.1-blue.svg">
+      <img src="https://img.shields.io/badge/version-0.0.2-blue.svg">
     </a>
   </p>
 </p>
@@ -25,7 +25,7 @@
 # Download
 $ git clone https://github.com/htrgouvea/zarn && cd zarn
     
-# Install libs and dependencies
+# Install libs dependencies
 $ sudo cpanm --installdeps .
 ```
 ---
