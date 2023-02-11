@@ -32,7 +32,7 @@ package Zarn::AST {
                         # this is a draft source-to-sink function
                         if (defined $next_element && ref $next_element && $next_element -> content() =~ /\$/) {
                             # if (!tainted()) {} // perform taint analyis 
-                            print "[$category] - FILE:$file \t Potefntial: $title.\n";                            
+                            print "[$category] - FILE:$file \t Potential: $title.\n";                            
                         }
                     }
                 }       
