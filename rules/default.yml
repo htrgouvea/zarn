@@ -6,11 +6,9 @@ rules:
     message:
     sample:
       - Dumper
-      # - Devel::Graph
-      # - Devel::StackTrace
   - id: '0002'
     category: vuln
-    name: Remote Command Execution // Code Injection
+    name: Code Injection
     message: 
     sample:
       - system
@@ -34,9 +32,3 @@ rules:
     message: 
     sample:
       - md5
-  # - id: '0006'
-  #   category: vuln
-  #   name: Hard-coded Credentials
-  #   message:
-  #   sample:
-  #     - password
