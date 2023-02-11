@@ -1,17 +1,16 @@
 package Zarn::AST {
-    use 5.018;
     use strict;
     use warnings;
-    use PPI::Document;
     use Getopt::Long;
-
+    use PPI::Document;
+    
     sub new {
         my ($self, $parameters) = @_;
         my ($file, $rules);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
-            "file=s" => \$file,
+            "file=s"  => \$file,
             "rules=s" => \$rules
         );
 
@@ -32,7 +31,8 @@ package Zarn::AST {
 
                         # this is a draft source-to-sink function
                         if (defined $next_element && ref $next_element && $next_element -> content() =~ /\$/) {
-                            print "[$category] - FILE:$file \t Potential: $title.\n";
+                            # if (!tainted()) {} // perform taint analyis 
+                            print "[$category] - FILE:$file \t Potefntial: $title.\n";                            
                         }
                     }
                 }       
