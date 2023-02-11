@@ -6,7 +6,7 @@
       <img src="https://img.shields.io/badge/license-MIT-blue.svg">
     </a>
      <a href="https://github.com/htrgouvea/zarn/releases">
-      <img src="https://img.shields.io/badge/version-0.0.2-blue.svg">
+      <img src="https://img.shields.io/badge/version-0.0.3-blue.svg">
     </a>
   </p>
 </p>
@@ -15,7 +15,7 @@
 
 ### Summary
 
-"Static program analysis is the analysis of computer software that is performed without actually executing programs, in contrast with dynamic analysis, which is analysis performed on programs while they are executing."[[1]](#references)
+Performing [static analysis](https://en.wikipedia.org/wiki/Static_program_analysis), Zarn is able to identify possible vulnerabilities: for this purpose, each file is parsed using [AST analysis](https://en.wikipedia.org/wiki/Abstract_syntax_tree) to recognize tokens that present risks and subsequently runs the [taint analysis](https://en.wikipedia.org/wiki/Taint_checking) process to confirm that it is a whether exploitable or not, analyzing the [data stream](https://en.wikipedia.org/wiki/Dataflow) to validate whether a malicious agent is able to target the method in question.
 
 ---
 
@@ -45,20 +45,27 @@ $ perl zarn.pl --rules rules/quick-wins.yml --source ../nozaki
 ### Rules example
 
 ```yaml
-- id: '0001'
-  category: vuln
-  name: Remote Command Execution // Code Injection
-  message: 
-  sample:
-    - system
-    - eval
-    - exec
-- id: '0002'
-  category: vuln
-  name: Path Traversal
-  message: 
-  sample:
-    - open
+rules:
+  - id: '0001'
+    category: info
+    name: Debug module enabled
+    message:
+    sample:
+      - Dumper
+  - id: '0002'
+    category: vuln
+    name: Code Injection
+    message: 
+    sample:
+      - system
+      - eval
+      - exec
+  - id: '0003'
+    category: vuln
+    name: Path Traversal
+    message: 
+    sample:
+      - open
 ```
 
 ---
@@ -80,9 +87,3 @@ Coming soon...
 ### License
 
 - This work is licensed under [MIT License.](/LICENSE.md)
-
---- 
-
-### References
-
-1. [https://en.wikipedia.org/wiki/Static_program_analysis](https://en.wikipedia.org/wiki/Static_program_analysis)
