@@ -72,11 +72,10 @@ rules:
 
 ---
 
-### Using with Github Actions
+### Future work
 
-```yaml
-Coming soon...
-```
+- Add support to multiple files context analysis;
+- A Github Actions App;
 
 ---
 
