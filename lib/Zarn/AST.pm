@@ -4,7 +4,6 @@ package Zarn::AST {
     use Getopt::Long;
     use PPI::Find;
     use PPI::Document;
-    use Data::Dumper;
 
     sub new {
         my ($self, $parameters) = @_;
