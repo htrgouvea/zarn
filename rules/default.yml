@@ -32,3 +32,8 @@ rules:
     message: 
     sample:
       - md5
+
+
+# Generic notes
+# CPAN Protocol: cpan://https://metacpan.org/pod/LWP#CPAN-Requests
+# Strict/warnings for modules: https://metacpan.org/pod/Carp
