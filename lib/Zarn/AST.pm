@@ -2,8 +2,10 @@ package Zarn::AST {
     use strict;
     use warnings;
     use Getopt::Long;
+    use PPI::Find;
     use PPI::Document;
-    
+    use Data::Dumper;
+
     sub new {
         my ($self, $parameters) = @_;
         my ($file, $rules);
@@ -30,9 +32,10 @@ package Zarn::AST {
                         my $next_element = $token -> snext_sibling;
 
                         # this is a draft source-to-sink function
-                        if (defined $next_element && ref $next_element && $next_element -> content() =~ /\$/) {
-                            # if (!tainted()) {} // perform taint analyis 
-                            print "[$category] - FILE:$file \t Potential: $title.\n";                            
+                        if (defined $next_element && ref $next_element && $next_element -> content() =~ /\$(\w+)/) {            
+                            # if (!tainted()) {} // perform taint analyis # print "Variable \$$1\n";
+
+                            print "[$category] - FILE:$file \t Potential: $title.\n";
                         }
                     }
                 }       

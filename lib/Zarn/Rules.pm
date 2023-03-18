@@ -9,11 +9,8 @@ package Zarn::Rules {
         if ($rules) {
             my $yamlfile   = YAML::Tiny -> read($rules);
             my @list_rules = $yamlfile -> [0] -> {rules};
-
-
-            # Add to rules:
-            #     context: presence
-            #     context: unpresence
+            
+            # Add to rules type: context: presence // context: unpresence
 
             return @list_rules;
         }
