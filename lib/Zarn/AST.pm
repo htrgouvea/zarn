@@ -32,10 +32,17 @@ package Zarn::AST {
                         my $next_element = $token -> snext_sibling;
 
                         # this is a draft source-to-sink function
-                        if (defined $next_element && ref $next_element && $next_element -> content() =~ /\$(\w+)/) {            
-                            # if (!tainted()) {} // perform taint analyis # print "Variable \$$1\n";
+                        if (defined $next_element && ref $next_element && $next_element -> content() =~ /\$(\w+)/) {  
+                            # perform taint analyis
+                            my $var_token = $document -> find_first(
+                                sub { $_[1] -> isa("PPI::Token::Symbol") and $_[1] -> content eq "\$$1" }
+                            );
 
-                            print "[$category] - FILE:$file \t Potential: $title.\n";
+                            if ($var_token && $var_token -> can("parent")) {
+                                if (($var_token -> parent -> isa("PPI::Statement::Expression") || $var_token -> parent -> isa("PPI::Token::Operator"))) {                                    
+                                    print "[$category] - FILE:$file \t Potential: $title.\n";
+                                }
+                            }
                         }
                     }
                 }       
