@@ -38,7 +38,10 @@ package Zarn::AST {
                             );
 
                             if ($var_token && $var_token -> can("parent")) {
-                                if (($var_token -> parent -> isa("PPI::Statement::Expression") || $var_token -> parent -> isa("PPI::Token::Operator"))) {                                    
+                                if ((
+                                    $var_token -> parent -> isa("PPI::Token::Operator") ||
+                                    $var_token -> parent -> isa("PPI::Statement::Expression")
+                                )) {                                    
                                     print "[$category] - FILE:$file \t Potential: $title.\n";
                                 }
                             }
