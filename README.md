@@ -6,7 +6,7 @@
       <img src="https://img.shields.io/badge/license-MIT-blue.svg">
     </a>
      <a href="https://github.com/htrgouvea/zarn/releases">
-      <img src="https://img.shields.io/badge/version-0.0.3-blue.svg">
+      <img src="https://img.shields.io/badge/version-0.0.4-blue.svg">
     </a>
   </p>
 </p>
@@ -15,7 +15,7 @@
 
 ### Summary
 
-Performing [static analysis](https://en.wikipedia.org/wiki/Static_program_analysis), Zarn is able to identify possible vulnerabilities: for this purpose, each file is parsed using [AST analysis](https://en.wikipedia.org/wiki/Abstract_syntax_tree) to recognize tokens that present risks and subsequently runs the [taint analysis](https://en.wikipedia.org/wiki/Taint_checking) process to confirm that it is a whether exploitable or not, analyzing the [data stream](https://en.wikipedia.org/wiki/Dataflow) to validate whether a malicious agent is able to target the method in question.
+Performing [static analysis](https://en.wikipedia.org/wiki/Static_program_analysis), Zarn is able to identify possible vulnerabilities: for this purpose, each file is parsed using [AST analysis](https://en.wikipedia.org/wiki/Abstract_syntax_tree) to recognize tokens that present risks and subsequently runs the [taint tracking](https://en.wikipedia.org/wiki/Taint_checking) process to confirm that it is a whether exploitable or not, to validate whether a malicious agent is able to target the method in question.
 
 Currently, Zarn do single file context analysis, which means that it is not able to identify vulnerabilities that are not directly related to the file being analyzed. But in the future, we plan to implement a [call graph](https://en.wikipedia.org/wiki/Call_graph) analysis to identify vulnerabilities that are not directly related to the file being analyzed.
 
@@ -74,8 +74,12 @@ rules:
 
 ### Future work
 
-- Add support to multiple files context analysis;
+- SARIF output format;
 - A Github Actions App;
+- A engine dedicated to Dataflow, with the following features:
+  - Alias analysis;
+  - Multiple files context analysis;
+- Keep the false-positive and false-negative rate as low as possible.
 
 ---
 
