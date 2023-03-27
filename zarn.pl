@@ -22,7 +22,7 @@ sub main {
 
     if (!$source) {
         print "
-			\rZarn v0.0.1
+			\rZarn v0.0.5
 			\rCore Commands
 			\r==============
 			\r\tCommand          Description
