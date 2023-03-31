@@ -28,7 +28,7 @@ rules:
       - ==
   - id: '0005'
     category: vuln
-    name: Weak Criptography Algorithm
+    name: Weak Hash Algorithm
     message: 
     sample:
       - md5
