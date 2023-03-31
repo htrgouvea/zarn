@@ -29,7 +29,7 @@ sub main {
 			\r\t-------          -----------
 			\r\t-s, --source     Configure a source directory to do static analysis
 			\r\t-r, --rules      Define YAML file with rules
-            \r\t-i, --ignore     Define a file or directory to ignore
+			\r\t-i, --ignore     Define a file or directory to ignore
 			\r\t-h, --help       To see help menu of a module
         \n";
 
