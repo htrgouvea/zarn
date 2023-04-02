@@ -19,6 +19,8 @@ Performing [static analysis](https://en.wikipedia.org/wiki/Static_program_analys
 
 Currently, Zarn do single file context analysis, which means that it is not able to identify vulnerabilities that are not directly related to the file being analyzed. But in the future, we plan to implement a [call graph](https://en.wikipedia.org/wiki/Call_graph) analysis to identify vulnerabilities that are not directly related to the file being analyzed.
 
+You can read the full publication about Zarn at: [a lightweight static security analysis tool for modern Perl Apps.](https://heitorgouvea.me/2023/03/19/static-security-analysis-tool-perl)
+
 ---
 
 ### Download and install
