@@ -9,31 +9,44 @@ rules:
   - id: '0002'
     category: vuln
     name: Code Injection
-    message: 
+    message:
     sample:
       - system
       - eval
       - exec
+      - qx
+      - backticks
+      - pipe
   - id: '0003'
     category: vuln
     name: Path Traversal
-    message: 
+    message:
     sample:
       - open
   - id: '0004'
     category: warn
     name: Timing Attack
-    message: 
+    message:
     sample:
       - ==
   - id: '0005'
     category: vuln
     name: Weak Criptography Algorithm
-    message: 
+    message:
     sample:
-      - md5
-
-
+      - chmod
+      - chown
+      - mkdir
+  - id: '0006'
+    category: vuln
+    name: SQL Injection
+    message:
+    sample:
+      - DBI
+      - prepare
+      - quote
+      - bind_param
+      
 # Generic notes
 # CPAN Protocol: cpan://https://metacpan.org/pod/LWP#CPAN-Requests
 # Strict/warnings for modules: https://metacpan.org/pod/Carp
