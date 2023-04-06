@@ -6,24 +6,23 @@ package Zarn::Files {
     sub new {
         my ($self, $source, $ignore) = @_;
 
-        unless ($source) {
-            warn "Source directory not provided";
-            return 0;
+        if ($source) {
+            my $rule = File::Find::Rule -> new();
+
+            $rule -> or (
+                $rule -> new -> directory -> name(".git", $ignore) -> prune -> discard,
+                $rule -> new
+            );
+
+            $rule -> file -> nonempty;
+            $rule -> name("*.pm", "*.t", "*.pl");
+
+            my @files = $rule -> in($source);
+
+            return @files;
         }
 
-        my $rule = File::Find::Rule -> new();
-
-        $rule -> or (
-            $rule -> new -> directory -> name(".git", $ignore) -> prune -> discard,
-            $rule -> new
-        );
-
-        $rule -> file -> nonempty;
-        $rule -> name("*.pm", "*.t", "*.pl");
-
-        my @files = $rule -> in($source);
-
-        return @files;
+        return 0;
     }
 }
 
