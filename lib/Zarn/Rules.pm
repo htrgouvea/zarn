@@ -1,4 +1,4 @@
-package Zarn::Rules{
+package Zarn::Rules {
     use strict;
     use warnings;
     use YAML::Tiny;
@@ -6,15 +6,14 @@ package Zarn::Rules{
     sub new {
         my ($self, $rules) = @_;
 
-        if (!$rules) {
-            return undef;
+        if ($rules) {
+            my $yamlfile = YAML::Tiny -> read($rules);
+            my @rules    = $yamlfile -> [0] -> {rules}; 
+
+            return @rules;
         }
 
-        my $yamlfile = YAML::Tiny->read($rules);
-
-        my $mapped_rules = $yamlfile->[0]->{rules}; 
-
-        return $mapped_rules;
+        return 0;
     }
 }
 
