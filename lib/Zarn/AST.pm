@@ -14,28 +14,27 @@ package Zarn::AST {
             "file=s"  => \$file,
             "rules=s" => \$rules
         );
+
+        if ($file && $rules) {
+            my $document = PPI::Document -> new($file);
+
+            $document -> prune("PPI::Token::Pod");
+            $document -> prune("PPI::Token::Comment");
+
+            foreach my $token (@{$document -> find("PPI::Token")}) {                    
+                foreach my $rule (@{$rules}) {
+                    my @sample   = $rule -> {sample} -> @*;
+                    my $category = $rule -> {category};
+                    my $title    = $rule -> {name};
+
+                    if ($self -> matches_sample($token -> content(), \@sample)) {
+                        $self -> process_sample_match($document, $category, $file, $title, $token);
+                    }
+                }       
+            }
+        }
         
-        if (!$file && !$rules) {
-            warn "Both file and rules parameters are required.";
-            return;
-        }
-
-        my $document = PPI::Document -> new($file);
-
-        $document -> prune("PPI::Token::Pod");
-        $document -> prune("PPI::Token::Comment");
-
-        foreach my $token (@{$document -> find("PPI::Token")}) {                    
-            foreach my $rule (@{$rules}) {
-                my @sample   = $rule -> {sample} -> @*;
-                my $category = $rule -> {category};
-                my $title    = $rule -> {name};
-
-                if ($self -> matches_sample($token -> content(), \@sample)) {
-                    $self -> process_sample_match($document, $category, $file, $title, $token);
-                }
-            }       
-        }
+        return 1;
     }
 
     sub matches_sample {
