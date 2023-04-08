@@ -9,30 +9,24 @@ rules:
   - id: '0002'
     category: vuln
     name: Code Injection
-    message: 
+    message:
     sample:
       - system
       - eval
       - exec
+      - qx
   - id: '0003'
     category: vuln
     name: Path Traversal
-    message: 
+    message:
     sample:
       - open
   - id: '0004'
-    category: warn
-    name: Timing Attack
-    message: 
-    sample:
-      - ==
-  - id: '0005'
     category: vuln
-    name: Weak Hash Algorithm
-    message: 
+    name: Weak Criptography Algorithm
+    message:
     sample:
       - md5
-
 
 # Generic notes
 # CPAN Protocol: cpan://https://metacpan.org/pod/LWP#CPAN-Requests

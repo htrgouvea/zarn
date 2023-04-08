@@ -7,10 +7,10 @@ package Zarn::Rules {
         my ($self, $rules) = @_;
 
         if ($rules) {
-            my $yamlfile   = YAML::Tiny -> read($rules);
-            my @list_rules = $yamlfile -> [0] -> {rules}; # Add to rules type: context: presence // context: unpresence
+            my $yamlfile = YAML::Tiny -> read($rules);
+            my @rules    = $yamlfile -> [0] -> {rules}; 
 
-            return @list_rules;
+            return @rules;
         }
 
         return 0;

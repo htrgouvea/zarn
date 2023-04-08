@@ -5,9 +5,9 @@ use strict;
 use warnings;
 
 sub main {
-    my @namae = $ARGV;
+    my $name = $ARGV;
 
-    system ("echo Hello World! @namae");
+    system ("echo Hello World! $name");
 }
 
 exit main();

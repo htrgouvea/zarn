@@ -2,7 +2,7 @@ package Zarn::Files {
     use strict;
     use warnings;
     use File::Find::Rule;
-    
+
     sub new {
         my ($self, $source, $ignore) = @_;
 
@@ -14,7 +14,7 @@ package Zarn::Files {
                 $rule -> new
             );
 
-            $rule -> file() -> nonempty();
+            $rule -> file -> nonempty;
             $rule -> name("*.pm", "*.t", "*.pl");
 
             my @files = $rule -> in($source);
