@@ -66,8 +66,9 @@ package Zarn::AST {
         );
 
         if ($var_token && $var_token -> can("parent")) {
-            if (($var_token -> parent -> isa("PPI::Token::Operator") || $var_token -> parent -> isa("PPI::Statement::Expression"))) {                                    
-                print "[$category] - FILE:$file \t Potential: $title.\n";
+            if (($var_token -> parent -> isa("PPI::Token::Operator") || $var_token -> parent -> isa("PPI::Statement::Expression"))) {
+                my ($line, $rowchar) = @{ $var_token -> location };
+                print "[$category] - FILE:$file \t Potential: $title. \t Line: $line:$rowchar.\n";
             }
         }
     }
