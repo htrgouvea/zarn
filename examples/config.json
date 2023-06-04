@@ -1,8 +1,0 @@
-{
-    "scheme": "https://",
-    "host": "heitorgouvea.me",
-    "base_path": "/api",
-    "port": "443",
-    "route": "/teste",
-    "endpoint": "/index"
-}
