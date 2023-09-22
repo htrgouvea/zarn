@@ -28,7 +28,7 @@ rules:
     sample:
       - md5
 
-# SSTI - Server Side Template Injection
 # Generic notes
+# SSTI - Server Side Template Injection
 # CPAN Protocol: cpan://https://metacpan.org/pod/LWP#CPAN-Requests
 # Strict/warnings for modules: https://metacpan.org/pod/Carp
