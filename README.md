@@ -74,17 +74,6 @@ rules:
 
 ---
 
-### Future work
-
-- SARIF output format;
-- A Github Actions App;
-- A engine dedicated to Dataflow, with the following features:
-  - Alias analysis;
-  - Multiple files context analysis;
-- Keep the false-positive and false-negative rate as low as possible.
-
----
-
 ### Contribution
 
 Your contributions and suggestions are heartily ♥ welcome. [See here the contribution guidelines.](/.github/CONTRIBUTING.md) Please, report bugs via [issues page](https://github.com/htrgouvea/nipe/issues) and for security issues, see here the [security policy.](/SECURITY.md) (✿ ◕‿◕)
