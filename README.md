@@ -76,7 +76,7 @@ rules:
 
 ### Contribution
 
-Your contributions and suggestions are heartily ♥ welcome. [See here the contribution guidelines.](/.github/CONTRIBUTING.md) Please, report bugs via [issues page](https://github.com/htrgouvea/nipe/issues) and for security issues, see here the [security policy.](/SECURITY.md) (✿ ◕‿◕)
+Your contributions and suggestions are heartily ♥ welcome. [See here the contribution guidelines.](/.github/CONTRIBUTING.md) Please, report bugs via [issues page](https://github.com/htrgouvea/zarn/issues) and for security issues, see here the [security policy.](/SECURITY.md) (✿ ◕‿◕)
 
 ---
 
