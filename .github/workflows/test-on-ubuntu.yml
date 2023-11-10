@@ -13,4 +13,4 @@ jobs:
         sudo cpanm --installdeps .
     - name: Verify the basic usage
       run: |
-        perl zarn.pl --source .
+        perl zarn.pl --source . --ignore examples
