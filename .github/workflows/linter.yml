@@ -9,8 +9,7 @@ jobs:
   critic:
     runs-on: ubuntu-latest
     steps:
-  - name: perlcritic
-    uses: gugod/actions-perlcritic@v1.0
-    with:
-      paths: "lib t"
-      options: "-p .perlcriticrc"
+    - name: perlcritic
+      uses: gugod/actions-perlcritic@v1.0
+      with:
+        options: "-p .perlcriticrc"
