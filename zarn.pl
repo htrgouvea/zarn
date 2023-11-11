@@ -14,6 +14,8 @@ sub main {
 
     my ($source, $ignore);
 
+    my $heitor;
+
     Getopt::Long::GetOptions (
         "r|rules=s"  => \$rules,
         "s|source=s" => \$source,
