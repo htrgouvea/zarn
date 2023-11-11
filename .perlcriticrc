@@ -1,2 +1,2 @@
 only = 1
-include = RequireUseStrict ProhibitUnusedVariables
+include = ProhibitUnusedVariables ProhibitUnusedConstant ProhibitUnusedInclude ProhibitUnusedImport
