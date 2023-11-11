@@ -8,7 +8,7 @@ package Zarn::Rules {
 
         if ($rules) {
             my $yamlfile = YAML::Tiny -> read($rules);
-            my @rules    = $yamlfile -> [0] -> {rules}; 
+            my @rules    = $yamlfile -> [0] -> {rules};
 
             return @rules;
         }
