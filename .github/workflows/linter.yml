@@ -9,7 +9,8 @@ jobs:
   critic:
     runs-on: ubuntu-latest
     steps:
-    - name: Perl Critic
-      uses: Difegue/action-perlcritic@master
+    - uses: actions/checkout@v2
+    - name: Run Perl::Critic
+      uses: natanlao/perl-critic-action@v1.1
       with:
-          args: ./lib/*
+        files: critic
