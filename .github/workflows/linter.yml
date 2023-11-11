@@ -12,5 +12,5 @@ jobs:
     - name: perlcritic
       uses: gugod/actions-perlcritic@v1.0
       with:
-         paths: "."
+        paths: "."
         options: "-p .perlcriticrc"
