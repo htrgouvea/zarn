@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+jobs:
+  critic:
+    runs-on: ubuntu-latest
+    steps:
   - name: perlcritic
     uses: gugod/actions-perlcritic@v1.0
     with:
