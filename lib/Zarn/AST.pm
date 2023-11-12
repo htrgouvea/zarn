@@ -21,7 +21,7 @@ package Zarn::AST {
             $document -> prune("PPI::Token::Pod");
             $document -> prune("PPI::Token::Comment");
 
-            foreach my $token (@{$document -> find("PPI::Token")}) {                    
+            foreach my $token (@{$document -> find("PPI::Token")}) {
                 foreach my $rule (@{$rules}) {
                     my @sample   = $rule -> {sample} -> @*;
                     my $category = $rule -> {category};
@@ -30,10 +30,10 @@ package Zarn::AST {
                     if ($self -> matches_sample($token -> content(), \@sample)) {
                         $self -> process_sample_match($document, $category, $file, $title, $token);
                     }
-                }       
+                }
             }
         }
-        
+
         return 1;
     }
 
@@ -52,7 +52,7 @@ package Zarn::AST {
         my $next_element = $token -> snext_sibling;
 
         # this is a draft source-to-sink function
-        if (defined $next_element && ref $next_element && $next_element -> content() =~ /[\$\@\%](\w+)/) {  
+        if (defined $next_element && ref $next_element && $next_element -> content() =~ /[\$\@\%](\w+)/) {
             # perform taint analysis
             $self -> perform_taint_analysis($document, $category, $file, $title, $next_element);
         }
