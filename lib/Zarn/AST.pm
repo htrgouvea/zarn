@@ -6,29 +6,38 @@ package Zarn::AST {
     use PPI::Document;
 
     sub new {
-        my ($self, $parameters) = @_;
-        my ($file, $rules);
+        my ($class, $parameters) = @_;
+        my ($file, $rules, $sarif);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
             "file=s"  => \$file,
-            "rules=s" => \$rules
+            "rules=s" => \$rules,
+            "sarif=s" => \$sarif
         );
 
+        my $self = {
+            file     => $file,
+            rules    => $rules,
+            sarif    => $sarif,
+            document => undef,
+        };
+
+        bless $self, $class;
+
         if ($file && $rules) {
-            my $document = PPI::Document -> new($file);
+            $self->{document} = PPI::Document->new($file);
+            $self->{document}->prune("PPI::Token::Pod");
+            $self->{document}->prune("PPI::Token::Comment");
 
-            $document -> prune("PPI::Token::Pod");
-            $document -> prune("PPI::Token::Comment");
+            foreach my $token (@{$self->{document}->find("PPI::Token")}) {
+                foreach my $rule (@{$self->{rules}}) {
+                    my @sample   = $rule->{sample}->@*;
+                    my $category = $rule->{category};
+                    my $title    = $rule->{name};
 
-            foreach my $token (@{$document -> find("PPI::Token")}) {
-                foreach my $rule (@{$rules}) {
-                    my @sample   = $rule -> {sample} -> @*;
-                    my $category = $rule -> {category};
-                    my $title    = $rule -> {name};
-
-                    if ($self -> matches_sample($token -> content(), \@sample)) {
-                        $self -> process_sample_match($document, $category, $file, $title, $token);
+                    if ($self->matches_sample($token->content(), \@sample)) {
+                        $self->process_sample_match($category, $title, $token);
                     }
                 }
             }
@@ -47,28 +56,28 @@ package Zarn::AST {
     }
 
     sub process_sample_match {
-        my ($self, $document, $category, $file, $title, $token) = @_;
+        my ($self, $category, $title, $token) = @_;
 
-        my $next_element = $token -> snext_sibling;
+        my $next_element = $token->snext_sibling;
 
         # this is a draft source-to-sink function
-        if (defined $next_element && ref $next_element && $next_element -> content() =~ /[\$\@\%](\w+)/) {
+        if (defined $next_element && ref $next_element && $next_element->content() =~ /[\$\@\%](\w+)/) {
             # perform taint analysis
-            $self -> perform_taint_analysis($document, $category, $file, $title, $next_element);
+            $self->perform_taint_analysis($category, $title, $next_element);
         }
     }
 
     sub perform_taint_analysis {
-        my ($self, $document, $category, $file, $title, $next_element) = @_;
+        my ($self, $category, $title, $next_element) = @_;
 
-        my $var_token = $document -> find_first(
-            sub { $_[1 ] -> isa("PPI::Token::Symbol") and $_[1] -> content eq "\$$1" }
+        my $var_token = $self->{document}->find_first(
+            sub { $_[1]->isa("PPI::Token::Symbol") and $_[1]->content eq "\$$1" }
         );
 
-        if ($var_token && $var_token -> can("parent")) {
-            if (($var_token -> parent -> isa("PPI::Token::Operator") || $var_token -> parent -> isa("PPI::Statement::Expression"))) {
-                my ($line, $rowchar) = @{ $var_token -> location };
-                print "[$category] - FILE:$file \t Potential: $title. \t Line: $line:$rowchar.\n";
+        if ($var_token && $var_token->can("parent")) {
+            if (($var_token->parent->isa("PPI::Token::Operator") || $var_token->parent->isa("PPI::Statement::Expression"))) {
+                my ($line, $rowchar) = @{ $var_token->location };
+                print "[$category] - FILE:" . $self->{file} . "\t Potential: $title. \t Line: $line:$rowchar.\n";
             }
         }
     }
