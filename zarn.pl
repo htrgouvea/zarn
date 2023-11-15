@@ -33,7 +33,7 @@ sub main {
           \r\t-r, --rules      Define YAML file with rules
           \r\t-i, --ignore     Define a file or directory to ignore
           \r\t-h, --help       To see help menu of a module
-          \r\t-srf, --sarif    Output in SARIF format\n
+          \r\t-srf, --sarif    Get output in SARIF format\n
         ";
 
         exit 1;
