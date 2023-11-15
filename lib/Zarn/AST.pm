@@ -4,6 +4,7 @@ package Zarn::AST {
     use Getopt::Long;
     use PPI::Find;
     use PPI::Document;
+    use Zarn::Sarif;
 
     sub new {
         my ($class, $parameters) = @_;
@@ -21,6 +22,7 @@ package Zarn::AST {
             rules    => $rules,
             sarif    => $sarif,
             document => undef,
+            sarif_report => undef
         };
 
         bless $self, $class;
@@ -29,6 +31,8 @@ package Zarn::AST {
             $self->{document} = PPI::Document->new($file);
             $self->{document}->prune("PPI::Token::Pod");
             $self->{document}->prune("PPI::Token::Comment");
+
+            $self->{sarif_report} = Zarn::Sarif->new() if $sarif;
 
             foreach my $token (@{$self->{document}->find("PPI::Token")}) {
                 foreach my $rule (@{$self->{rules}}) {
@@ -77,8 +81,20 @@ package Zarn::AST {
         if ($var_token && $var_token->can("parent")) {
             if (($var_token->parent->isa("PPI::Token::Operator") || $var_token->parent->isa("PPI::Statement::Expression"))) {
                 my ($line, $rowchar) = @{ $var_token->location };
-                print "[$category] - FILE:" . $self->{file} . "\t Potential: $title. \t Line: $line:$rowchar.\n";
+                if ($self->{sarif}) {
+                    $self->{sarif_report}->add_vulnerability(0, $title, $self->{file}, $line);
+                    print $self->{sarif_report}->to_json();
+                } else {
+                    print "[$category] - FILE:" . $self->{file} . "\t Potential: $title. \t Line: $line:$rowchar.\n";
+                }
             }
+        }
+    }
+
+    sub finalize {
+        my ($self) = @_;
+        if ($self->{sarif}) {
+            print $self->{sarif_report}->to_json();
         }
     }
 }
