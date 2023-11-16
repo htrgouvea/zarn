@@ -7,13 +7,13 @@ package Zarn::AST {
     use JSON::PP;
 
     sub new {
-        my ($self, $parameters) = @_;
-        my ($file, $rules);
+        my ($class, $parameters) = @_;
+        my ($file, $rules, $sarif_output);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
             "file=s"  => \$file,
-            "rules=s" => \$rules
+            "rules=s" => \$rules,
             "sarif=s" => \$sarif_output
         );
 
@@ -70,14 +70,6 @@ package Zarn::AST {
             # perform taint analysis
             $self -> perform_taint_analysis($document, $category, $file, $title, $next_element);
             
-            # collect the subset to generate SARIF output
-            my $info = {
-                category => $category,
-                title    => $title,
-                file     => $file,
-                line     => $line
-            };
-            push @{$self->{subset}}, $info;
         }
     }
 
@@ -92,14 +84,26 @@ package Zarn::AST {
             if (($var_token->parent -> isa("PPI::Token::Operator") || $var_token -> parent -> isa("PPI::Statement::Expression"))) {
                 my ($line, $rowchar) = @{$var_token -> location};
                 print "[$category] - FILE:$file \t Potential: $title. \t Line: $line:$rowchar.\n";
+            
+            # collect the subset to generate SARIF output
+            my $info = {
+                category => $category,
+                title    => $title,
+                file     => $file,
+                line     => $line,
+                row      => $rowchar
+            };
+            push @{$self->{subset}}, $info;
+
             }
         }
     }
 
     sub generate_sarif {
-        my ($self, $output_file) = @_;
+        my ($self) = @_;
+        my $output_file = $self -> {sarif_output};
         my $sarif_data = {
-            "$schema" => "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+            "\$schema" => "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
             version   => "2.1.0",
             runs      => [{
                 tool    => {
@@ -112,18 +116,19 @@ package Zarn::AST {
             }]
         };
 
-        foreach my $info (@{$self->{subset}}) {
+        foreach my $info (@{$self -> {subset}}) {
             my $result = {
                 message => {
-                    text => $info->{title}
+                    text => $info -> {title}
                 },
                 locations => [{
                     physicalLocation => {
                         artifactLocation => {
-                            uri => $info->{file}
+                            uri => $info -> {file}
                         },
                         region => {
-                            startLine => $info->{line}
+                            startLine => $info -> {line},
+                            endLine   => $info -> {row}
                         }
                     }
                 }]
