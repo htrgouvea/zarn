@@ -1,5 +1,10 @@
 name: Testing on Ubuntu
-on: [push]
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
