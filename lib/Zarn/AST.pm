@@ -33,7 +33,7 @@ package Zarn::AST {
             $self -> {document} -> prune("PPI::Token::Pod");
             $self -> {document} -> prune("PPI::Token::Comment");
 
-            $self->{sarif_report} = Zarn::Sarif->new() if $sarif;
+            $self -> {sarif_report} = Zarn::Sarif -> new() if $sarif;
 
             foreach my $token (@{$self -> {document}->find("PPI::Token")}) {
                 foreach my $rule (@{$self -> {rules}}) {
