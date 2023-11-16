@@ -48,10 +48,6 @@ package Zarn::AST {
             }
         }
 
-        if ($sarif_output) {
-            $self -> generate_sarif()
-        }
-
         return 1;
     }
 

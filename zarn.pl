@@ -41,7 +41,6 @@ sub main {
 
     my @rules = Zarn::Rules -> new($rules);
     my @files = Zarn::Files -> new($source, $ignore);
-    my $sarif = $sarif_output; 
 
     foreach my $file (@files) {
         if (@rules) {
