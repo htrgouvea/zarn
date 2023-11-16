@@ -92,48 +92,6 @@ package Zarn::AST {
             }
         }
     }
-
-    sub generate_sarif {
-        my ($self) = @_;
-        my $output_file = $self -> {sarif_output};
-        my $sarif_data = {
-            "\$schema" => "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
-            version   => "2.1.0",
-            runs      => [{
-                tool    => {
-                    driver => {
-                        name    => "ZARN",
-                        version => "0.0.5"
-                    }
-                },
-                results => []
-            }]
-        };
-
-        foreach my $info (@{$self -> {subset}}) {
-            my $result = {
-                message => {
-                    text => $info -> {title}
-                },
-                locations => [{
-                    physicalLocation => {
-                        artifactLocation => {
-                            uri => $info -> {file}
-                        },
-                        region => {
-                            startLine => $info -> {line},
-                            endLine   => $info -> {row}
-                        }
-                    }
-                }]
-            };
-            push @{$sarif_data -> {runs}[0]{results}}, $result;
-        }
-
-        open(my $fh, '>', $output_file) or die "Cannot open file '$output_file': $!";
-        print $fh encode_json($sarif_data);
-        close($fh);
-    }
 }
 
 1;
