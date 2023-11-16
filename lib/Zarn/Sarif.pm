@@ -28,7 +28,18 @@ package Zarn::Sarif {
 
     sub add_vulnerability {
         my ($self, $run_index, $vulnerability_title, $file_uri, $line) = @_;
-        my $result = {
+        my $result = _create_result($vulnerability_title, $file_uri, $line);
+        push @{$self -> {runs} -> [$run_index] -> {results}}, $result;
+    }
+
+    sub prepare_for_json {
+        my ($self) = @_;
+        return {%$self};
+    }
+
+    sub _create_result {
+        my ($vulnerability_title, $file_uri, $line) = @_;
+        return {
             "ruleId" => $vulnerability_title,
             "message" => {
                 "text" => "Vulnerability found: $vulnerability_title"
@@ -46,18 +57,6 @@ package Zarn::Sarif {
                 }
             ]
         };
-        push @{$self->{runs}->[$run_index]->{results}}, $result;
-    }
-
-    sub TO_JSON {
-        my ($self) = @_;
-        return {%$self};
-    }
-
-    sub to_json {
-        my ($self) = @_;
-        my $json = JSON->new->allow_blessed->convert_blessed;
-        return $json->encode($self);
     }
 
     1;

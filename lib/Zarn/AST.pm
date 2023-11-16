@@ -5,6 +5,7 @@ package Zarn::AST {
     use PPI::Find;
     use PPI::Document;
     use Zarn::Sarif;
+    use JSON;
 
     sub new {
         my ($class, $parameters) = @_;
@@ -28,20 +29,20 @@ package Zarn::AST {
         bless $self, $class;
 
         if ($file && $rules) {
-            $self->{document} = PPI::Document->new($file);
-            $self->{document}->prune("PPI::Token::Pod");
-            $self->{document}->prune("PPI::Token::Comment");
+            $self -> {document} = PPI::Document->new($file);
+            $self -> {document} -> prune("PPI::Token::Pod");
+            $self -> {document} -> prune("PPI::Token::Comment");
 
             $self->{sarif_report} = Zarn::Sarif->new() if $sarif;
 
-            foreach my $token (@{$self->{document}->find("PPI::Token")}) {
-                foreach my $rule (@{$self->{rules}}) {
-                    my @sample   = $rule->{sample}->@*;
-                    my $category = $rule->{category};
-                    my $title    = $rule->{name};
+            foreach my $token (@{$self -> {document}->find("PPI::Token")}) {
+                foreach my $rule (@{$self -> {rules}}) {
+                    my @sample   = $rule -> {sample}->@*;
+                    my $category = $rule -> {category};
+                    my $title    = $rule -> {name};
 
-                    if ($self->matches_sample($token->content(), \@sample)) {
-                        $self->process_sample_match($category, $title, $token);
+                    if ($self -> matches_sample($token -> content(), \@sample)) {
+                        $self -> process_sample_match($category, $title, $token);
                     }
                 }
             }
@@ -74,27 +75,21 @@ package Zarn::AST {
     sub perform_taint_analysis {
         my ($self, $category, $title, $next_element) = @_;
 
-        my $var_token = $self->{document}->find_first(
-            sub { $_[1]->isa("PPI::Token::Symbol") and $_[1]->content eq "\$$1" }
+        my $var_token = $self -> {document} -> find_first(
+            sub { $_[1] -> isa("PPI::Token::Symbol") and $_[1]->content eq "\$$1" }
         );
 
-        if ($var_token && $var_token->can("parent")) {
-            if (($var_token->parent->isa("PPI::Token::Operator") || $var_token->parent->isa("PPI::Statement::Expression"))) {
-                my ($line, $rowchar) = @{ $var_token->location };
-                if ($self->{sarif}) {
-                    $self->{sarif_report}->add_vulnerability(0, $title, $self->{file}, $line);
-                    print $self->{sarif_report}->to_json();
+        if ($var_token && $var_token -> can("parent")) {
+            if (($var_token -> parent -> isa("PPI::Token::Operator") || $var_token -> parent -> isa("PPI::Statement::Expression"))) {
+                my ($line, $rowchar) = @{ $var_token -> location };
+
+                if ($self -> {sarif}) {
+                    $self -> {sarif_report} -> add_vulnerability(0, $title, $self -> {file}, $line);
+                    print encode_json($self -> {sarif_report} -> prepare_for_json());
                 } else {
-                    print "[$category] - FILE:" . $self->{file} . "\t Potential: $title. \t Line: $line:$rowchar.\n";
+                    print "[$category] - FILE:" . $self -> {file} . "\t Potential: $title. \t Line: $line:$rowchar.\n";
                 }
             }
-        }
-    }
-
-    sub finalize {
-        my ($self) = @_;
-        if ($self->{sarif}) {
-            print $self->{sarif_report}->to_json();
         }
     }
 }
