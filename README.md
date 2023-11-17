@@ -37,7 +37,7 @@ $ sudo cpanm --installdeps .
 ### Example of use
 
 ```bash
-$ perl zarn.pl --rules rules/quick-wins.yml --source ../nozaki 
+$ perl zarn.pl --rules rules/quick-wins.yml --source ../nozaki --sarif report.sarif
 
 [warn] - FILE:../nozaki/lib/Functions/Helper.pm          Potential: Timing Attack.
 [vuln] - FILE:../nozaki/lib/Engine/Orchestrator.pm       Potential: Path Traversal.
