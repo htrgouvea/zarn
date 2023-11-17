@@ -9,6 +9,7 @@ package Zarn::SARIF {
             "version" => "2.1.0",
             "runs" => []
         };
+        
         bless $self, $class;
         
         return $self;

@@ -1,11 +1,11 @@
 package Zarn::AST {
     use strict;
     use warnings;
-    use Getopt::Long;
-    use PPI::Find;
-    use PPI::Document;
-    use Zarn::SARIF;
     use JSON;
+    use PPI::Find;
+    use Zarn::SARIF;
+    use Getopt::Long;
+    use PPI::Document;
 
     sub new {
         my ($class, $parameters) = @_;
@@ -33,11 +33,13 @@ package Zarn::AST {
             $self -> {document} -> prune("PPI::Token::Pod");
             $self -> {document} -> prune("PPI::Token::Comment");
 
-            $self -> {sarif_report} = Zarn::SARIF -> new() if $sarif;
+            if ($sarif) {
+                $self -> {sarif_report} = Zarn::SARIF -> new();
+            }
 
             foreach my $token (@{$self -> {document} -> find("PPI::Token")}) {
                 foreach my $rule (@{$self -> {rules}}) {
-                    my @sample   = $rule -> {sample}->@*;
+                    my @sample   = $rule -> {sample} -> @*;
                     my $category = $rule -> {category};
                     my $title    = $rule -> {name};
 
@@ -63,12 +65,12 @@ package Zarn::AST {
     sub process_sample_match {
         my ($self, $category, $title, $token) = @_;
 
-        my $next_element = $token->snext_sibling;
+        my $next_element = $token -> snext_sibling;
 
         # this is a draft source-to-sink function
-        if (defined $next_element && ref $next_element && $next_element->content() =~ /[\$\@\%](\w+)/) {
+        if (defined $next_element && ref $next_element && $next_element -> content() =~ /[\$\@\%](\w+)/) {
             # perform taint analysis
-            $self->perform_taint_analysis($category, $title, $next_element);
+            $self -> perform_taint_analysis($category, $title, $next_element);
         }
     }
 
@@ -76,12 +78,13 @@ package Zarn::AST {
         my ($self, $category, $title, $next_element) = @_;
 
         my $var_token = $self -> {document} -> find_first(
-            sub { $_[1] -> isa("PPI::Token::Symbol") and $_[1]->content eq "\$$1" }
+            sub { $_[1] -> isa("PPI::Token::Symbol") and $_[1] -> content eq "\$$1" }
         );
 
         if ($var_token && $var_token -> can("parent")) {
             if (($var_token -> parent -> isa("PPI::Token::Operator") || $var_token -> parent -> isa("PPI::Statement::Expression"))) {
                 my ($line, $rowchar) = @{ $var_token -> location };
+                
                 print "[$category] - FILE:" . $self -> {file} . "\t Potential: $title. \t Line: $line:$rowchar.\n";
 
                 if ($self -> {sarif}) {
@@ -89,7 +92,7 @@ package Zarn::AST {
                     my $sarif_output = encode_json($self -> {sarif_report} -> prepare_for_json());
 
                     if ($self -> {sarif} ne '') {
-                        open my $fh, '>', $self->{sarif} or die "Cannot open file $self->{sarif}: $!";
+                        open my $fh, '>', $self -> {sarif} or die "Cannot open file $self->{sarif}: $!";
                         print $fh $sarif_output;
                         close $fh;
                     }

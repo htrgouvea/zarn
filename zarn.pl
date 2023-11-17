@@ -11,9 +11,7 @@ use Getopt::Long;
 
 sub main {
     my $rules = "rules/default.yml";
-    my $sarif = 0;
-
-    my ($source, $ignore);
+    my ($source, $ignore, $sarif);
 
     Getopt::Long::GetOptions (
         "r|rules=s"  => \$rules,
