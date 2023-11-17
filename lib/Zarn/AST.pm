@@ -4,7 +4,7 @@ package Zarn::AST {
     use Getopt::Long;
     use PPI::Find;
     use PPI::Document;
-    use Zarn::Sarif;
+    use Zarn::SARIF;
     use JSON;
 
     sub new {
@@ -33,9 +33,9 @@ package Zarn::AST {
             $self -> {document} -> prune("PPI::Token::Pod");
             $self -> {document} -> prune("PPI::Token::Comment");
 
-            $self -> {sarif_report} = Zarn::Sarif -> new() if $sarif;
+            $self -> {sarif_report} = Zarn::SARIF -> new() if $sarif;
 
-            foreach my $token (@{$self -> {document}->find("PPI::Token")}) {
+            foreach my $token (@{$self -> {document} -> find("PPI::Token")}) {
                 foreach my $rule (@{$self -> {rules}}) {
                     my @sample   = $rule -> {sample}->@*;
                     my $category = $rule -> {category};
@@ -84,11 +84,11 @@ package Zarn::AST {
                 my ($line, $rowchar) = @{ $var_token -> location };
                 print "[$category] - FILE:" . $self -> {file} . "\t Potential: $title. \t Line: $line:$rowchar.\n";
 
-                if ($self->{sarif}) {
-                    $self->{sarif_report}->add_vulnerability(0, $title, $self->{file}, $line);
-                    my $sarif_output = encode_json($self->{sarif_report}->prepare_for_json());
+                if ($self -> {sarif}) {
+                    $self -> {sarif_report} -> add_vulnerability(0, $title, $self -> {file}, $line);
+                    my $sarif_output = encode_json($self -> {sarif_report} -> prepare_for_json());
 
-                    if ($self->{sarif} ne '') {
+                    if ($self -> {sarif} ne '') {
                         open my $fh, '>', $self->{sarif} or die "Cannot open file $self->{sarif}: $!";
                         print $fh $sarif_output;
                         close $fh;

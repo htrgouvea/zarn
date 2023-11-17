@@ -1,4 +1,4 @@
-package Zarn::Sarif {
+package Zarn::SARIF {
     use strict;
     use warnings;
     use JSON;
@@ -10,12 +10,14 @@ package Zarn::Sarif {
             "runs" => []
         };
         bless $self, $class;
+        
         return $self;
     }
 
     sub add_run {
         my ($self, $tool_name, $tool_info_uri) = @_;
-        push @{$self->{runs}}, {
+        
+        push @{$self -> {runs}}, {
             "tool" => {
                 "driver" => {
                     "name" => $tool_name,
@@ -29,16 +31,19 @@ package Zarn::Sarif {
     sub add_vulnerability {
         my ($self, $run_index, $vulnerability_title, $file_uri, $line) = @_;
         my $result = _create_result($vulnerability_title, $file_uri, $line);
+        
         push @{$self -> {runs} -> [$run_index] -> {results}}, $result;
     }
 
     sub prepare_for_json {
         my ($self) = @_;
+        
         return {%$self};
     }
 
     sub _create_result {
         my ($vulnerability_title, $file_uri, $line) = @_;
+        
         return {
             "ruleId" => $vulnerability_title,
             "message" => {
@@ -58,6 +63,6 @@ package Zarn::Sarif {
             ]
         };
     }
-
-    1;
 }
+
+1;
