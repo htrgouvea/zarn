@@ -24,7 +24,7 @@ sub main {
 
     if (!$source) {
         print "
-          \rZarn v0.0.6
+          \rZarn v0.0.7
           \rCore Commands
           \r==============
           \r\tCommand          Description
@@ -32,8 +32,8 @@ sub main {
           \r\t-s, --source     Configure a source directory to do static analysis
           \r\t-r, --rules      Define YAML file with rules
           \r\t-i, --ignore     Define a file or directory to ignore
-          \r\t-h, --help       To see help menu of a module
-          \r\t-srf, --sarif    Get output in SARIF format\n
+          \r\t-srf, --sarif    Get output in SARIF format
+          \r\t-h, --help       To see help menu of a module\n
         ";
 
         exit 1;
@@ -45,7 +45,7 @@ sub main {
     foreach my $file (@files) {
         if (@rules) {
             my $analysis = Zarn::AST -> new ([
-                "--file" => $file,
+                "--file"  => $file,
                 "--rules" => @rules,
                 "--sarif" => $sarif
             ]);
