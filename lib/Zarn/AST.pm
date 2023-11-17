@@ -82,12 +82,17 @@ package Zarn::AST {
         if ($var_token && $var_token -> can("parent")) {
             if (($var_token -> parent -> isa("PPI::Token::Operator") || $var_token -> parent -> isa("PPI::Statement::Expression"))) {
                 my ($line, $rowchar) = @{ $var_token -> location };
+                print "[$category] - FILE:" . $self -> {file} . "\t Potential: $title. \t Line: $line:$rowchar.\n";
 
-                if ($self -> {sarif}) {
-                    $self -> {sarif_report} -> add_vulnerability(0, $title, $self -> {file}, $line);
-                    print encode_json($self -> {sarif_report} -> prepare_for_json());
-                } else {
-                    print "[$category] - FILE:" . $self -> {file} . "\t Potential: $title. \t Line: $line:$rowchar.\n";
+                if ($self->{sarif}) {
+                    $self->{sarif_report}->add_vulnerability(0, $title, $self->{file}, $line);
+                    my $sarif_output = encode_json($self->{sarif_report}->prepare_for_json());
+
+                    if ($self->{sarif} ne '') {
+                        open my $fh, '>', $self->{sarif} or die "Cannot open file $self->{sarif}: $!";
+                        print $fh $sarif_output;
+                        close $fh;
+                    }
                 }
             }
         }

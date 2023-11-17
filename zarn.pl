@@ -19,7 +19,7 @@ sub main {
         "r|rules=s"  => \$rules,
         "s|source=s" => \$source,
         "i|ignore=s" => \$ignore,
-        "srf|sarif!" => \$sarif
+        "srf|sarif=s" => \$sarif
     );
 
     if (!$source) {
