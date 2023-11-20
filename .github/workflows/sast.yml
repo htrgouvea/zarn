@@ -19,6 +19,6 @@ jobs:
     - name: Verify the basic usage
       run: |
         perl zarn.pl --source . --sarif zarn.sarif
-     - uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: zarn.sarif
+    - uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: zarn.sarif
