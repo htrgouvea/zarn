@@ -1,4 +1,4 @@
-name: Linter / Perl Critic
+name: Linter
 
 on:
   pull_request:

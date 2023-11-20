@@ -8,6 +8,8 @@
      <a href="https://github.com/htrgouvea/zarn/releases">
       <img src="https://img.shields.io/badge/version-0.0.8-blue.svg">
     </a>
+    <br/>
+    <img src="https://github.com/htrgouvea/zarn/actions/workflows/linter.yml/badge.svg">
   </p>
 </p>
 
@@ -70,6 +72,13 @@ rules:
     message: 
     sample:
       - open
+```
+
+---
+
+### Github Actions
+
+```yaml
 ```
 
 ---
