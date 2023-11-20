@@ -1,10 +1,9 @@
 package Zarn::SARIF {
     use strict;
     use warnings;
-    use JSON;
 
      sub new {
-        my ($self, $sarif_file, @vulnerabilities) = @_;
+        my ($self, @vulnerabilities) = @_;
 
         my $sarif_data = {
             "\$schema" => "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
@@ -41,9 +40,7 @@ package Zarn::SARIF {
             push @{$sarif_data -> {runs}[0]{results}}, $result;
         }
 
-        open(my $file, '>', $sarif_file) or die "Cannot open file '$sarif_file': $!";
-        print $file encode_json($sarif_data);
-        close($file);
+        return $sarif_data;
     }
 }
 

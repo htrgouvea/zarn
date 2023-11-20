@@ -9,6 +9,7 @@ use Zarn::AST;
 use Zarn::Files;
 use Zarn::Rules;
 use Zarn::SARIF;
+use JSON;
 
 sub main {
     my $rules = "rules/default.yml";
@@ -23,7 +24,7 @@ sub main {
 
     if (!$source) {
         print "
-          \rZarn v0.0.7
+          \rZarn v0.0.8
           \rCore Commands
           \r==============
           \r\tCommand          Description
@@ -63,7 +64,11 @@ sub main {
     }
 
     if ($sarif) {
-        my $generate = Zarn::SARIF -> new ($sarif, @results);
+        my $sarif_data = Zarn::SARIF -> new (@results);
+
+        open(my $output, '>', $sarif) or die "Cannot open file '$sarif': $!";
+        print $output encode_json($sarif_data);
+        close($output);
     }
 
     return 1;
