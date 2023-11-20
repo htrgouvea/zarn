@@ -8,7 +8,7 @@ use Getopt::Long;
 use Zarn::AST;
 use Zarn::Files;
 use Zarn::Rules;
-use Zarn::SARIF;
+use Zarn::Sarif;
 use JSON;
 
 sub main {
@@ -64,7 +64,7 @@ sub main {
     }
 
     if ($sarif) {
-        my $sarif_data = Zarn::SARIF -> new (@results);
+        my $sarif_data = Zarn::Sarif -> new (@results);
 
         open(my $output, '>', $sarif) or die "Cannot open file '$sarif': $!";
         print $output encode_json($sarif_data);
