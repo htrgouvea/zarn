@@ -12,6 +12,7 @@ package Zarn::Sarif {
                 tool    => {
                     driver => {
                         name    => "ZARN",
+                        informationUri => "https://github.com/htrgouvea/zarn",
                         version => "0.0.8"
                     }
                 },
@@ -21,6 +22,7 @@ package Zarn::Sarif {
 
         foreach my $info (@vulnerabilities) {
             my $result = {
+                ruleId => $info -> {title},
                 message => {
                     text => $info -> {title}
                 },
@@ -31,7 +33,7 @@ package Zarn::Sarif {
                         },
                         region => {
                             startLine => $info -> {line},
-                            endLine   => $info -> {row}
+                            startColumn  => $info -> {rowchar}
                         }
                     }
                 }]
