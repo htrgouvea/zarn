@@ -71,7 +71,7 @@ sub main {
         close($output);
     }
 
-    return 1;
+    return 0;
 }
 
 exit main();
