@@ -4,6 +4,8 @@ package Zarn::AST {
     use Getopt::Long;
     use PPI::Find;
     use PPI::Document;
+    
+    our $VERSION = '0.01';
 
     sub new {
         my ($self, $parameters) = @_;
@@ -27,11 +29,11 @@ package Zarn::AST {
                     my $category = $rule -> {category};
                     my $title    = $rule -> {name};
 
-                    if (grep {my $content = $_; scalar(grep {$content =~ m/$_/} @sample)} $token -> content()) {
+                    if (grep {my $content = $_; scalar(grep {$content =~ m/$_/xms} @sample)} $token -> content()) {
                         my $next_element = $token -> snext_sibling;
 
                         # this is a draft source-to-sink function
-                        if (defined $next_element && ref $next_element && $next_element -> content() =~ /[\$\@\%](\w+)/) {
+                        if (defined $next_element && ref $next_element && $next_element -> content() =~ /[\$\@\%](\w+)/xms) {
                             # perform taint analyis
                             my $var_token = $document -> find_first (
                                 sub { $_[1] -> isa("PPI::Token::Symbol") and $_[1] -> content eq "\$$1" }
