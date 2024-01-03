@@ -4,7 +4,9 @@ package Zarn::AST {
     use Getopt::Long;
     use PPI::Find;
     use PPI::Document;
-
+    
+    our $VERSION = '0.01';
+    
     sub new {
         my ($self, $parameters) = @_;
         my ($file, $rules, @results);
