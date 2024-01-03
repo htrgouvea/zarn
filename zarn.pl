@@ -11,7 +11,7 @@ use Zarn::Rules;
 use Zarn::Sarif;
 use JSON;
 
-our $VERSION = '0.01';
+our $VERSION = '0.0.9';
 
 sub main {
     my $rules = "rules/default.yml";
@@ -26,7 +26,7 @@ sub main {
 
     if (!$source) {
         print "
-          \rZarn v0.0.8
+          \rZarn v0.0.9
           \rCore Commands
           \r==============
           \r\tCommand          Description

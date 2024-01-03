@@ -15,7 +15,7 @@ package Zarn::Sarif {
                     driver => {
                         name    => "ZARN",
                         informationUri => "https://github.com/htrgouvea/zarn",
-                        version => "0.0.8"
+                        version => "0.0.9"
                     }
                 },
                 results => []
