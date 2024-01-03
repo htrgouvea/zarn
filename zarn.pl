@@ -11,6 +11,8 @@ use Zarn::Rules;
 use Zarn::Sarif;
 use JSON;
 
+our $VERSION = '0.01';
+
 sub main {
     my $rules = "rules/default.yml";
     my ($source, $ignore, $sarif, @results);
