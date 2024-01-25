@@ -14,11 +14,10 @@ jobs:
     - uses: actions/checkout@v4
     - name: Install Perl and cpanminus
       run: |
-        apt update
-        apt install -y make perl cpanminus
+        sudo apt install -y make perl cpanminus
     - name: Install dependencies using cpanm
       run: |
-        cpanm --installdeps -f --notest .
+        sudo cpanm --installdeps -f --notest .
     - name: Verify the basic usage
       run: |
         perl zarn.pl --source . --sarif zarn.sarif
