@@ -1,4 +1,4 @@
-name: Testing on Ubuntu
+name: ZARN - Static Analysis
 
 on:
   pull_request:
@@ -7,15 +7,17 @@ on:
       - develop
 
 jobs:
-  build:
+  zarn:
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v4
-    - name: Install dependencies
+    - name: Install Perl and cpanminus
       run: |
-        sudo apt install -y perl cpanminus
-        sudo cpanm --installdeps .
+        sudo apt install -y make perl cpanminus
+    - name: Install dependencies using cpanm
+      run: |
+        sudo cpanm --installdeps -f --notest .
     - name: Verify the basic usage
       run: |
         perl zarn.pl --source . --sarif zarn.sarif

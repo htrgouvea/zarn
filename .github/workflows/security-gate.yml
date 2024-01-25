@@ -7,7 +7,7 @@ on:
       - develop
 
 jobs:
-  build:
+  gate:
     runs-on: ubuntu-latest
     env:
       MAX_CRITICAL: 0
