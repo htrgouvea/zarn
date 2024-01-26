@@ -80,6 +80,22 @@ rules:
 ### Github Actions
 
 ```yaml
+name: ZARN
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '28 23 * * 1'
+
+jobs:
+  zarn:
+    name: Security Static Analaysis with ZARN
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: htrgouvea/zarn@0.0.9
 ```
 
 ---
