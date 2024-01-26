@@ -1,6 +1,6 @@
-name: contributor-takes-action
-description: This is an action to assign yourself to an issue for a repo you are not a contributor to.
-author: B Dolla Mon$ign
+name: Zarn
+description: A lightweight static security analysis tool for modern Perl Apps
+author: Heitor Gouvêa
 branding:
-  icon: 'thumbs-up'
-  color: 'white'
+  icon: "shield"
+  color: "blue"
