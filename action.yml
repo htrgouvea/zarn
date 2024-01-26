@@ -32,7 +32,7 @@ runs:
         IGNORE: ${{ inputs.ignore }}
         SARIF_FILE: ${{ inputs.sarif_file }}
       run: |
-        docker run -v ${{ github.workspace }}:/usr/src/zarn/${{ github.workspace }} ghcr.io/htrgouvea/zarn/:latest \
+        docker run -v ${{ github.workspace }}:/usr/src/zarn/target/ ghcr.io/htrgouvea/zarn/:latest \
           --source ${SOURCE:-''} \
           --rules ${RULES:-''} \
           --ignore ${IGNORE:-''} \
