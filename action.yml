@@ -14,6 +14,9 @@ inputs:
     description: 'Define YAML file with rules'
     required: false
     default: './rules/default.yml'
+  ignore:
+    description: 'Define a file or directory to ignore'
+    required: false
 
 runs:
   using: "composite"
