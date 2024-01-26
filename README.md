@@ -96,6 +96,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: htrgouvea/zarn@0.1.0
+    - uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: result.sarif
 ```
 
 ---
