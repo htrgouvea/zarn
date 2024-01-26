@@ -80,7 +80,7 @@ rules:
 ### Github Actions
 
 ```yaml
-name: ZARN
+name: ZARN SAST
 
 on:
   push:
@@ -95,7 +95,7 @@ jobs:
     name: Security Static Analaysis with ZARN
     runs-on: ubuntu-20.04
     steps:
-    - uses: htrgouvea/zarn@0.0.9
+    - uses: htrgouvea/zarn@0.1.0
 ```
 
 ---
