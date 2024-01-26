@@ -9,7 +9,7 @@ inputs:
   source:
     description: 'Configure a source directory to do static analysis'
     required: false
-    default: "${{ github.workspace }}"
+    default: "./${{ github.workspace }}"
   rules:
     description: 'Define YAML file with rules'
     required: false
@@ -17,6 +17,10 @@ inputs:
   ignore:
     description: 'Define a file or directory to ignore'
     required: false
+  sarif_file:
+    description: 'Define the SARIF output file'
+    required: false
+    default: './${{ github.workspace }}/result.sarif'
 
 runs:
   using: "composite"
@@ -31,4 +35,5 @@ runs:
         docker run -v ${{ github.workspace }}:/usr/src/zarn/${{ github.workspace }}/ ghcr.io/htrgouvea/zarn/zarn:latest \
           --source ${SOURCE:-''} \
           --rules ${RULES:-''} \
-          --ignore ${IGNORE:-''}
+          --ignore ${IGNORE:-''} \
+          --sarif ${SARIF_FILE:-''}
