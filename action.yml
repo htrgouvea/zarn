@@ -5,20 +5,18 @@ branding:
   icon: "shield"
   color: "blue"
 
-inputs:
-  source:
-    description: Configure a source directory to do static analysis
-    required: false
-    default: "./"
-  rules:
-    description: Define YAML file with rules
-    required: false
-    default: './rules/default.yml'
-  ignore:
-    description: Define a file or directory to ignore
-    required: false
-    default: ''
-  sarif:
-    description: Define the SARIF output file
-    required: false
-     default: 'result.sarif'
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      env:
+        SOURCE: ${{ inputs.source }}
+        RULES: ${{ inputs.rules }}
+        IGNORE: ${{ inputs.ignore }}
+        SARIF: ${{ inputs.sarif }}
+      run: |
+        docker run ghcr.io/htrgouvea/zarn/zarn:latest \
+          --source ${SOURCE:-''} \
+          --rules ${RULES:-''} \
+          --ignore ${IGNORE:-''} \
+          --sarif ${SARIF:-''}
