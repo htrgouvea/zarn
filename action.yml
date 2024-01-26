@@ -10,6 +10,10 @@ inputs:
     description: 'Configure a source directory to do static analysis'
     required: false
     default: "./"
+  rules:
+    description: 'Define YAML file with rules'
+    required: false
+    default: './rules/default.yml'
 
 runs:
   using: "composite"
