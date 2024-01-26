@@ -9,7 +9,7 @@ inputs:
   source:
     description: 'Configure a source directory to do static analysis'
     required: false
-    default: "../"
+    default: "target/"
   rules:
     description: 'Define YAML file with rules'
     required: false
@@ -20,7 +20,7 @@ inputs:
   sarif_file:
     description: 'Define the SARIF output file'
     required: false
-    default: './result.sarif'
+    default: 'target/result.sarif'
 
 runs:
   using: "composite"
@@ -32,7 +32,7 @@ runs:
         IGNORE: ${{ inputs.ignore }}
         SARIF_FILE: ${{ inputs.sarif_file }}
       run: |
-        docker run ghcr.io/htrgouvea/zarn/zarn:latest \
+        docker run -v $PWD:/usr/src/zarn/target ghcr.io/htrgouvea/zarn/zarn:latest \
           --source ${SOURCE:-''} \
           --rules ${RULES:-''} \
           --ignore ${IGNORE:-''} \
