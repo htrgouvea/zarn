@@ -14,6 +14,8 @@ use JSON;
 our $VERSION = '0.0.9';
 
 sub main {
+    print $VERSION;
+    
     my $rules = "rules/default.yml";
     my ($source, $ignore, $sarif, @results);
 
@@ -69,7 +71,9 @@ sub main {
         my $sarif_data = Zarn::Sarif -> new (@results);
 
         open(my $output, '>', $sarif) or die "Cannot open file '$sarif': $!";
+        
         print $output encode_json($sarif_data);
+        
         close($output);
     }
 
