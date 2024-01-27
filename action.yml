@@ -20,7 +20,7 @@ inputs:
   sarif_file:
     description: 'Define the SARIF output file'
     required: false
-    default: "./${{ github.workspace }}/result.sarif"
+    default: "${{ github.workspace }}/result.sarif"
 
 runs:
   using: "composite"
@@ -33,7 +33,7 @@ runs:
         SARIF_FILE: ${{ inputs.sarif_file }}
       run: |
         docker run -v "${{ github.workspace }}:/usr/src/zarn/${SOURCE}/" ghcr.io/htrgouvea/zarn/zarn:latest \
-          --source "${SOURCE:-''}" \
+          --source "./${SOURCE:-''}" \
           --rules "${RULES:-''}" \
           --ignore "${IGNORE:-''}" \
-          --sarif "${SARIF_FILE:-''}"
+          --sarif "./${SARIF_FILE:-''}"
