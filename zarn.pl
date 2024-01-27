@@ -41,14 +41,10 @@ sub main {
         exit 1;
     }
 
-    print $source, "\n";
-
     my @rules = Zarn::Rules -> new($rules);
     my @files = Zarn::Files -> new($source, $ignore);
 
     foreach my $file (@files) {
-        print "File -> $file\n";
-        
         if (@rules) {
             my @analysis = Zarn::AST -> new ([
                 "--file" => $file,
@@ -70,8 +66,6 @@ sub main {
     }
 
     if ($sarif) {
-        print $sarif;
-
         my $sarif_data = Zarn::Sarif -> new (@results);
 
         open(my $output, '>', $sarif) or die "Cannot open file '$sarif': $!";
