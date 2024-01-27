@@ -20,7 +20,7 @@ inputs:
   sarif_file:
     description: 'Define the SARIF output file'
     required: false
-    default: './${{ github.repository }}result.sarif'
+    default: './${{ github.repository }}/result.sarif'
 
 runs:
   using: "composite"
