@@ -95,7 +95,13 @@ jobs:
     name: Security Static Analaysis with ZARN
     runs-on: ubuntu-20.04
     steps:
-    - uses: htrgouvea/zarn@0.1.0
+    - name: Perform Static Analysis
+      uses: htrgouvea/zarn@0.1.1
+      
+    - name: Send result to Github Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: result.sarif
 ```
 
 ---
