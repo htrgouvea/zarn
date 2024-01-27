@@ -9,7 +9,7 @@ inputs:
   source:
     description: 'Configure a source directory to do static analysis'
     required: false
-    default: "target"
+    default: "./target"
   rules:
     description: 'Define YAML file with rules'
     required: false
