@@ -100,6 +100,11 @@ jobs:
       
     - name: Perform Static Analysis
       uses: htrgouvea/zarn@0.0.9
+
+    - name: Send result to Github Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: result.sarif
 ```
 
 ---
