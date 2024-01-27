@@ -47,6 +47,8 @@ sub main {
     my @files = Zarn::Files -> new($source, $ignore);
 
     foreach my $file (@files) {
+        print "File -> $file\n";
+        
         if (@rules) {
             my @analysis = Zarn::AST -> new ([
                 "--file" => $file,
