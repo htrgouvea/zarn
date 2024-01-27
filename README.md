@@ -92,16 +92,14 @@ on:
 
 jobs:
   zarn:
-    name: Security Static Analaysis with ZARN
+    name: Security Static Analysis with ZARN
     runs-on: ubuntu-20.04
     steps:
-    - name: Perform Static Analysis
-      uses: htrgouvea/zarn@0.1.1
+    - name: Checkout code
+      uses: actions/checkout@v4
       
-    - name: Send result to Github Security
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: result.sarif
+    - name: Perform Static Analysis
+      uses: htrgouvea/zarn@0.0.9
 ```
 
 ---
