@@ -34,6 +34,6 @@ runs:
       run: |
         ls
         docker run -v "${{ github.workspace }}:/usr/src/zarn/target/" ghcr.io/htrgouvea/zarn/zarn:latest \
-          --source "./${SOURCE:-''}" \
+          --source "${SOURCE:-''}" \
           --rules "${RULES:-''}" \
           --ignore "${IGNORE:-''}"
