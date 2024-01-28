@@ -3,13 +3,13 @@ rules:
   - id: '0001'
     category: info
     name: Debug module enabled
-    message:
+    message: Debug modules can expose sensitive information and potentially create security vulnerabilities.
     sample:
       - Dumper
   - id: '0002'
     category: vuln
     name: Code Injection
-    message:
+    message: Occur when untrusted data is executed as code, allowing attackers to run arbitrary commands on the server.
     sample:
       - system
       - eval
@@ -18,12 +18,12 @@ rules:
   - id: '0003'
     category: vuln
     name: Path Traversal
-    message:
+    message: Occur when user input is not properly sanitized, allowing attackers to access files and directories outside of the intended directory structure.
     sample:
       - open
   - id: '0004'
     category: vuln
     name: Weak Criptography Algorithm
-    message:
+    message: Weak algorithms like MD5 are susceptible to various attacks and should be avoided in favor of stronger alternatives to ensure the security of sensitive data.
     sample:
       - md5
