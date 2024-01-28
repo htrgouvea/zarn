@@ -11,6 +11,7 @@
     <br/>
     <img src="https://github.com/htrgouvea/zarn/actions/workflows/linter.yml/badge.svg">
     <img src="https://github.com/htrgouvea/zarn/actions/workflows/sast.yml/badge.svg">
+    <img src="https://github.com/htrgouvea/zarn/actions/workflows/security-gate.yml/badge.svg">
   </p>
 </p>
 
