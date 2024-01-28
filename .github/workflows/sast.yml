@@ -1,4 +1,4 @@
-name: ZARN - Static Analysis
+name: Zarn SAST
 
 on:
   pull_request:
