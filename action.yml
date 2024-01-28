@@ -1,5 +1,5 @@
 name: zarn-sast
-description: A lightweight static security analysis tool for modern Perl Apps
+description: A lightweight static security analysis tool (SAST) for modern Perl Apps
 author: Heitor Gouvêa
 branding:
   icon: "shield"

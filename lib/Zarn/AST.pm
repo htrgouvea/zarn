@@ -28,6 +28,7 @@ package Zarn::AST {
                     my @sample   = $rule -> {sample} -> @*;
                     my $category = $rule -> {category};
                     my $title    = $rule -> {name};
+                    my $message  = $rule -> {message};
 
                     if (grep {my $content = $_; scalar(grep {$content =~ m/$_/xms} @sample)} $token -> content()) {
                         my $next_element = $token -> snext_sibling;
@@ -50,6 +51,7 @@ package Zarn::AST {
                                         category => $category,
                                         file     => $file,
                                         title    => $title,
+                                        message  => $message,
                                         line     => $line,
                                         rowchar  => $rowchar
                                     };
