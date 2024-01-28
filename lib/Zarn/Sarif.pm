@@ -25,8 +25,11 @@ package Zarn::Sarif {
         foreach my $info (@vulnerabilities) {
             my $result = {
                 ruleId => $info -> {title},
+                properties => {
+                    title => $info -> {title}
+                },
                 message => {
-                    text => $info -> {title}
+                    text => $info -> {message}
                 },
                 locations => [{
                     physicalLocation => {
