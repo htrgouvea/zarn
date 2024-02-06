@@ -6,7 +6,7 @@
       <img src="https://img.shields.io/badge/license-MIT-blue.svg">
     </a>
      <a href="https://github.com/htrgouvea/zarn/releases">
-      <img src="https://img.shields.io/badge/version-0.0.9-blue.svg">
+      <img src="https://img.shields.io/badge/version-0.1.0-blue.svg">
     </a>
     <br/>
     <img src="https://github.com/htrgouvea/zarn/actions/workflows/linter.yml/badge.svg">
@@ -57,21 +57,22 @@ rules:
   - id: '0001'
     category: info
     name: Debug module enabled
-    message:
+    message: Debug modules can expose sensitive information and potentially create security vulnerabilities.
     sample:
       - Dumper
   - id: '0002'
     category: vuln
     name: Code Injection
-    message: 
+    message: Occur when untrusted data is executed as code, allowing attackers to run arbitrary commands on the server.
     sample:
       - system
       - eval
       - exec
+      - qx
   - id: '0003'
     category: vuln
     name: Path Traversal
-    message: 
+    message: Occur when user input is not properly sanitized, allowing attackers to access files and directories outside of the intended directory structure.
     sample:
       - open
 ```
@@ -113,7 +114,6 @@ jobs:
 ### Contribution
 
 Your contributions and suggestions are heartily ♥ welcome. [See here the contribution guidelines.](/.github/CONTRIBUTING.md) Please, report bugs via [issues page](https://github.com/htrgouvea/zarn/issues) and for security issues, see here the [security policy.](/SECURITY.md) (✿ ◕‿◕) This project follows this [style guide: (https://github.com/htrgouvea/perl-style-guide)](https://github.com/htrgouvea/perl-style-guide).
-
 
 ---
 
