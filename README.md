@@ -90,7 +90,7 @@ on:
   pull_request:
     branches: [ "main" ]
   schedule:
-    - cron: '28 23 * * 1'
+    - cron: "28 23 * * 1"
 
 jobs:
   zarn:
