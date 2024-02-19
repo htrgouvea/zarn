@@ -45,7 +45,7 @@ package Zarn::AST {
                                     $var_token -> parent -> isa("PPI::Token::Operator") ||
                                     $var_token -> parent -> isa("PPI::Statement::Expression")
                                 )) {
-                                    my ($line, $rowchar) = @{$var_token -> location};
+                                    my ($line, $rowchar) = @{$token -> location};
 
                                     push @results, {
                                         category => $category,
