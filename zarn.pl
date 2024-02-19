@@ -3,6 +3,7 @@
 use 5.030;
 use strict;
 use warnings;
+use Carp;
 use lib "./lib/";
 use Getopt::Long;
 use Zarn::AST;
@@ -25,18 +26,16 @@ sub main {
     );
 
     if (!$source) {
-        print "
-          \rZarn v0.0.9
-          \rCore Commands
-          \r==============
-          \r\tCommand          Description
-          \r\t-------          -----------
-          \r\t-s, --source     Configure a source directory to do static analysis
-          \r\t-r, --rules      Define YAML file with rules
-          \r\t-i, --ignore     Define a file or directory to ignore
-          \r\t-srf, --sarif    Define the SARIF output file
-          \r\t-h, --help       To see help menu of a module\n
-        \r";
+        print "\nZarn v0.0.9"
+        . "\nCore Commands"
+        . "\n==============\n"
+        . "\tCommand          Description\n"
+        . "\t-------          -----------\n"
+        . "\t-s, --source     Configure a source directory to do static analysis\n"
+        . "\t-r, --rules      Define YAML file with rules\n"
+        . "\t-i, --ignore     Define a file or directory to ignore\n"
+        . "\t-srf, --sarif    Define the SARIF output file\n"
+        . "\t-h, --help       To see help menu of a module\n\n";
 
         exit 1;
     }
@@ -68,7 +67,7 @@ sub main {
     if ($sarif) {
         my $sarif_data = Zarn::Sarif -> new (@results);
 
-        open(my $output, '>', $sarif) or die "Cannot open file '$sarif': $!";
+        open(my $output, '>', $sarif) or croak "Cannot open file '$sarif': $!";
         
         print $output encode_json($sarif_data);
         

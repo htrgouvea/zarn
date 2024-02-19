@@ -3,7 +3,7 @@ package Zarn::Files {
     use warnings;
     use File::Find::Rule;
 
-    our $VERSION = '0.01';
+    our $VERSION = '0.0.1';
 
     sub new {
         my ($self, $source, $ignore) = @_;
