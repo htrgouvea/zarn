@@ -5,7 +5,7 @@ package Zarn::AST {
     use PPI::Find;
     use PPI::Document;
     
-    our $VERSION = '0.0.1';
+    our $VERSION = '0.0.2';
 
     sub new {
         my ($self, $parameters) = @_;
