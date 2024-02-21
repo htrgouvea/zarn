@@ -20,8 +20,8 @@ package Zarn::AST {
         if ($file && $rules) {
             my $document = PPI::Document -> new($file);
 
-            # $document -> prune("PPI::Token::Pod");
-            # $document -> prune("PPI::Token::Comment");
+            $document -> prune("PPI::Token::Pod");
+            $document -> prune("PPI::Token::Comment");
 
             foreach my $token (@{$document -> find("PPI::Token")}) {
                 foreach my $rule (@{$rules}) {
