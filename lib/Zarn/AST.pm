@@ -45,15 +45,18 @@ package Zarn::AST {
                                     $var_token -> parent -> isa("PPI::Token::Operator") ||
                                     $var_token -> parent -> isa("PPI::Statement::Expression")
                                 )) {
-                                    my ($line, $rowchar) = @{$token -> location};
+                                    my ($line_sink, $rowchar_sink) = @{$token -> location};
+                                    my ($line_source, $rowchar_source) = @{$var_token -> location};
 
                                     push @results, {
-                                        category => $category,
-                                        file     => $file,
-                                        title    => $title,
-                                        message  => $message,
-                                        line     => $line,
-                                        rowchar  => $rowchar
+                                        category       => $category,
+                                        file           => $file,
+                                        title          => $title,
+                                        message        => $message,
+                                        line_sink      => $line_sink,
+                                        rowchar_sink   => $rowchar_sink,
+                                        line_source    => $line_source,
+                                        rowchar_source => $rowchar_source
                                     };
                                 }
                             }
