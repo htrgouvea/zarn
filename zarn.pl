@@ -55,13 +55,15 @@ sub main {
     }
 
     foreach my $result (@results) {
-        my $category = $result -> {category};
-        my $file     = $result -> {file};
-        my $title    = $result -> {title};
-        my $line     = $result -> {line};
-        my $rowchar  = $result -> {rowchar};
+        my $category       = $result -> {category};
+        my $file           = $result -> {file};
+        my $title          = $result -> {title};
+        my $line_sink      = $result -> {line_sink};
+        my $rowchar_sink   = $result -> {rowchar_sink};
+        my $line_source    = $result -> {line_source};
+        my $rowchar_source = $result -> {rowchar_source};
 
-        print "[$category] - FILE:$file \t Potential: $title. \t Line: $line:$rowchar\n";
+        print "[$category] - FILE:$file \t Potential: $title. \t Dangerous function on line: $line_sink:$rowchar_sink \t Data point possibility controlled: $line_source:$rowchar_source\n";
     }
 
     if ($sarif) {
