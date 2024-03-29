@@ -5,7 +5,7 @@ package Zarn::AST {
     use PPI::Find;
     use PPI::Document;
     
-    our $VERSION = '0.0.2';
+    our $VERSION = '0.0.3';
 
     sub new {
         my ($self, $parameters) = @_;
@@ -41,6 +41,12 @@ package Zarn::AST {
                             );
 
                             if ($var_token && $var_token -> can("parent")) {
+                                my @childrens = $var_token -> parent -> children;
+
+                                if (grep {$_ -> isa("PPI::Token::Quote::Double")} @childrens) {
+                                    next;
+                                }
+
                                 if ((
                                     $var_token -> parent -> isa("PPI::Token::Operator") ||
                                     $var_token -> parent -> isa("PPI::Statement::Expression")
