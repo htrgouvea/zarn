@@ -5,7 +5,7 @@ package Zarn::AST {
     use PPI::Find;
     use PPI::Document;
     
-    our $VERSION = '0.0.3';
+    our $VERSION = '0.0.4';
 
     sub new {
         my ($self, $parameters) = @_;
@@ -36,14 +36,21 @@ package Zarn::AST {
                         # this is a draft source-to-sink function
                         if (defined $next_element && ref $next_element && $next_element -> content() =~ /[\$\@\%](\w+)/xms) {
                             # perform taint analyis
-                            my $var_token = $document -> find_first (
-                                sub { $_[1] -> isa("PPI::Token::Symbol") and $_[1] -> content eq "\$$1" }
+                            my $var_token = $document -> find_first (                                
+                                sub { 
+                                    $_[1] -> isa("PPI::Token::Symbol") and 
+                                    ($_[1] ->content eq "\$$1" or $_[1] -> content eq "\@$1" or $_[1] -> content eq "\%$1")
+                                }
                             );
 
                             if ($var_token && $var_token -> can("parent")) {
                                 my @childrens = $var_token -> parent -> children;
 
-                                if (grep {$_ -> isa("PPI::Token::Quote::Double")} @childrens) {
+                                if (grep { # verifyng if the variable is a fixed string or a number
+                                    $_ -> isa("PPI::Token::Quote::Double") ||
+                                    $_ -> isa("PPI::Token::Quote::Single") ||
+                                    $_ -> isa("PPI::Token::Number")
+                                } @childrens) {
                                     next;
                                 }
 
