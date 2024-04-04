@@ -37,8 +37,8 @@ package Zarn::Sarif {
                             uri => $info -> {file}
                         },
                         region => {
-                            startLine => $info -> {line},
-                            startColumn  => $info -> {rowchar}
+                            startLine => $info -> {line_sink},
+                            startColumn  => $info -> {rowchar_sink}
                         }
                     }
                 }]

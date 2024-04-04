@@ -1,0 +1,8 @@
+---
+rules:
+  - id: '0001'
+    category: vuln
+    name: Cross Site Scripting (XSS)
+    message: Occur when untrusted data is rendered as HTML without proper escaping, allowing attackers to execute malicious scripts in the context of the victim's browser.
+    sample:
+      - render
