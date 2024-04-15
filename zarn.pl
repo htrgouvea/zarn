@@ -4,15 +4,17 @@ use 5.030;
 use strict;
 use warnings;
 use Carp;
+use JSON;
 use lib "./lib/";
 use Getopt::Long;
-use Zarn::AST;
-use Zarn::Files;
-use Zarn::Rules;
-use Zarn::Sarif;
-use JSON;
+use Zarn::Engine::AST;
+use Zarn::Helper::Files;
+use Zarn::Helper::Rules;
+use Zarn::Helper::Sarif;
+use Zarn::Engine::Source_to_Sink;
+use Data::Dumper;
 
-our $VERSION = '0.0.9';
+our $VERSION = '0.1.0';
 
 sub main {
     my $rules = "rules/default.yml";
@@ -26,7 +28,7 @@ sub main {
     );
 
     if (!$source) {
-        print "\nZarn v0.0.9"
+        print "\nZarn v0.1.0"
         . "\nCore Commands"
         . "\n==============\n"
         . "\tCommand          Description\n"
@@ -40,15 +42,21 @@ sub main {
         exit 1;
     }
 
-    my @rules = Zarn::Rules -> new($rules);
-    my @files = Zarn::Files -> new($source, $ignore);
+    my @rules = Zarn::Helper::Rules -> new($rules);
+    my @files = Zarn::Helper::Files -> new($source, $ignore);
 
     foreach my $file (@files) {
         if (@rules) {
-            my @analysis = Zarn::AST -> new ([
-                "--file" => $file,
+            my $ast = Zarn::Engine::AST -> new (["--file" => $file]);
+
+            my @analysis = Zarn::Engine::Source_to_Sink -> new ([
+                "--ast" => $ast,
                 "--rules" => @rules
             ]);
+
+            if (@analysis) {
+                $analysis[0] -> {'file'} = $file;
+            }
 
             push @results, @analysis;
         }

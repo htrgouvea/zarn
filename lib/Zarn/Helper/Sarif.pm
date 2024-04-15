@@ -1,8 +1,8 @@
-package Zarn::Sarif {
+package Zarn::Helper::Sarif {
     use strict;
     use warnings;
 
-    our $VERSION = '0.0.1';
+    our $VERSION = '0.0.2';
 
      sub new {
         my ($self, @vulnerabilities) = @_;
@@ -15,7 +15,7 @@ package Zarn::Sarif {
                     driver => {
                         name    => "ZARN",
                         informationUri => "https://github.com/htrgouvea/zarn",
-                        version => "0.0.9"
+                        version => "0.1.0"
                     }
                 },
                 results => []
