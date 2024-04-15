@@ -1,9 +1,9 @@
-package Zarn::Rules {
+package Zarn::Helper::Rules {
     use strict;
     use warnings;
     use YAML::Tiny;
 
-    our $VERSION = '0.0.1';
+    our $VERSION = '0.0.2';
 
     sub new {
         my ($self, $rules) = @_;

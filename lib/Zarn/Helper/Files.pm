@@ -1,9 +1,9 @@
-package Zarn::Files {
+package Zarn::Helper::Files {
     use strict;
     use warnings;
     use File::Find::Rule;
 
-    our $VERSION = '0.0.1';
+    our $VERSION = '0.0.2';
 
     sub new {
         my ($self, $source, $ignore) = @_;
