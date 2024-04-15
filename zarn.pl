@@ -74,7 +74,7 @@ sub main {
     }
 
     if ($sarif) {
-        my $sarif_data = Zarn::Sarif -> new (@results);
+        my $sarif_data = Zarn::Helper::Sarif -> new (@results);
 
         open(my $output, '>', $sarif) or croak "Cannot open file '$sarif': $!";
         
