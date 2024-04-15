@@ -12,7 +12,6 @@ use Zarn::Helper::Files;
 use Zarn::Helper::Rules;
 use Zarn::Helper::Sarif;
 use Zarn::Engine::Source_to_Sink;
-use Data::Dumper;
 
 our $VERSION = '0.1.0';
 

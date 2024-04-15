@@ -5,7 +5,6 @@ package Zarn::Engine::Source_to_Sink {
     use Getopt::Long;
     use PPI::Document;
     use Zarn::Engine::Taint_Analysis;
-    use Data::Dumper;
 
     our $VERSION = '0.0.2';
 
