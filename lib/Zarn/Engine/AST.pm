@@ -9,7 +9,7 @@ package Zarn::Engine::AST {
 
     sub new {
         my ($self, $parameters) = @_;
-        my ($file, $rules, @results);
+        my ($file);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
