@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Carp;
 use JSON;
-use lib "./lib/";
+use lib './lib/';
 use Getopt::Long;
 use Zarn::Engine::AST;
 use Zarn::Helper::Files;
@@ -16,14 +16,14 @@ use Zarn::Engine::Source_to_Sink;
 our $VERSION = '0.1.0';
 
 sub main {
-    my $rules = "rules/default.yml";
+    my $rules = 'rules/default.yml';
     my ($source, $ignore, $sarif, @results);
 
     Getopt::Long::GetOptions (
-        "r|rules=s"   => \$rules,
-        "s|source=s"  => \$source,
-        "i|ignore=s"  => \$ignore,
-        "srf|sarif=s" => \$sarif
+        'r|rules=s'   => \$rules,
+        's|source=s'  => \$source,
+        'i|ignore=s'  => \$ignore,
+        'srf|sarif=s' => \$sarif
     );
 
     if (!$source) {
@@ -46,11 +46,11 @@ sub main {
 
     foreach my $file (@files) {
         if (@rules) {
-            my $ast = Zarn::Engine::AST -> new (["--file" => $file]);
+            my $ast = Zarn::Engine::AST -> new (['--file' => $file]);
 
             my @analysis = Zarn::Engine::Source_to_Sink -> new ([
-                "--ast" => $ast,
-                "--rules" => @rules
+                '--ast' => $ast,
+                '--rules' => @rules
             ]);
 
             if (@analysis) {
@@ -76,11 +76,11 @@ sub main {
     if ($sarif) {
         my $sarif_data = Zarn::Helper::Sarif -> new (@results);
 
-        open(my $output, '>', $sarif) or croak "Cannot open file '$sarif': $!";
-        
+        open(my $output, '>', $sarif) or croak "Cannot open the $sarif file\n";
+
         print $output encode_json($sarif_data);
-        
-        close($output);
+
+        close($output) or die "Error to close the file\n";
     }
 
     return 0;
