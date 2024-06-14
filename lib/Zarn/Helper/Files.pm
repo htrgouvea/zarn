@@ -3,21 +3,25 @@ package Zarn::Helper::Files {
     use warnings;
     use File::Find::Rule;
 
-    our $VERSION = '0.0.2';
+    our $VERSION = '0.0.3';
 
     sub new {
         my ($self, $source, $ignore) = @_;
 
         if ($source) {
             my $rule = File::Find::Rule -> new();
+            my $exclude_rule = $rule -> new();
 
-            $rule -> or (
-                $rule -> new -> directory -> name(".git", $ignore) -> prune -> discard,
-                $rule -> new
-            );
+            $exclude_rule = $exclude_rule -> directory();
+            $exclude_rule = $exclude_rule -> name('.git', $ignore);
+            $exclude_rule = $exclude_rule -> prune();
+            $exclude_rule = $exclude_rule -> discard();
+
+            my $file_rule = $rule -> new();
+            $rule -> or ($exclude_rule, $file_rule);
 
             $rule -> file -> nonempty;
-            $rule -> name("*.pm", "*.t", "*.pl");
+            $rule -> name('*.pm', '*.t', '*.pl');
 
             my @files = $rule -> in($source);
 

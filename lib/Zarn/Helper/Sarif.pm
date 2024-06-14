@@ -8,14 +8,14 @@ package Zarn::Helper::Sarif {
         my ($self, @vulnerabilities) = @_;
 
         my $sarif_data = {
-            "\$schema" => "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
-            version   => "2.1.0",
+            "\$schema" => 'https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json',
+            version   => '2.1.0',
             runs      => [{
                 tool    => {
                     driver => {
-                        name    => "ZARN",
-                        informationUri => "https://github.com/htrgouvea/zarn",
-                        version => "0.1.0"
+                        name    => 'ZARN',
+                        informationUri =>'"https://github.com/htrgouvea/zarn',
+                        version => '0.1.0'
                     }
                 },
                 results => []

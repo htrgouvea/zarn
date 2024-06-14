@@ -4,7 +4,7 @@ package Zarn::Engine::AST {
     use PPI::Find;
     use Getopt::Long;
     use PPI::Document;
-    
+
     our $VERSION = '0.0.6';
 
     sub new {
@@ -13,14 +13,14 @@ package Zarn::Engine::AST {
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
-            "file=s"  => \$file
+            'file=s'  => \$file
         );
 
         if ($file) {
             my $document = PPI::Document -> new($file);
 
-            $document -> prune("PPI::Token::Pod");
-            $document -> prune("PPI::Token::Comment");
+            $document -> prune('PPI::Token::Pod');
+            $document -> prune('PPI::Token::Comment');
 
             return $document;
         }
