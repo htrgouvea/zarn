@@ -86,4 +86,4 @@ sub main {
     return 0;
 }
 
-exit main();
+main();
