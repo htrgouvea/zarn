@@ -6,12 +6,13 @@
       <img src="https://img.shields.io/badge/license-MIT-blue.svg">
     </a>
      <a href="https://github.com/htrgouvea/zarn/releases">
-      <img src="https://img.shields.io/badge/version-0.1.0-blue.svg">
+      <img src="https://img.shields.io/badge/version-0.1.1-blue.svg">
     </a>
     <br/>
     <img src="https://github.com/htrgouvea/zarn/actions/workflows/linter.yml/badge.svg">
     <img src="https://github.com/htrgouvea/zarn/actions/workflows/sast.yml/badge.svg">
     <img src="https://github.com/htrgouvea/zarn/actions/workflows/security-gate.yml/badge.svg">
+    <img src="https://github.com/htrgouvea/zarn/actions/workflows/test-on-ubuntu.yml/badge.svg">
   </p>
 </p>
 
