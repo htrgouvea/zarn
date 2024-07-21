@@ -38,7 +38,7 @@ sub main {
             . "\t-srf, --sarif    Define the SARIF output file\n"
             . "\t-h, --help       To see help menu of a module\n\n";
 
-        exit 1;
+        return 0;
     }
 
     my @rules = Zarn::Helper::Rules->new($rules);
