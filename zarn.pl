@@ -42,7 +42,7 @@ sub main {
     }
 
     my @rules = Zarn::Helper::Rules->new($rules);
-    my @files = Zarn::Helper::Files->new( $source, $ignore );
+    my @files = Zarn::Helper::Files->new($source, $ignore);
 
     foreach my $file (@files) {
         if (@rules) {

@@ -25,6 +25,11 @@ package Zarn::Helper::Files {
 
             my @files = $rule -> in($source);
 
+            if (!@files) {
+                print "[!] Could not identify any files in: $source.\n";
+                return 1;
+            }
+
             return @files;
         }
 
