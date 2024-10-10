@@ -4,3 +4,7 @@
 --square-bracket-tightness=2
 --tight-secret-operators
 --maximum-consecutive-blank-lines=1
+--nocuddled-else
+--nooutdent-long-quotes
+
+# perltidy -nst -b filename.pl
