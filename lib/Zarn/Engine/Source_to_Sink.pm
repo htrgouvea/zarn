@@ -20,7 +20,7 @@ package Zarn::Engine::Source_to_Sink {
         );
 
         if ($ast && $rules) {
-            foreach my $token (@{$ast -> find('PPI::Token')}) {
+            foreach my $token (@{$ast -> find('PPI::Token') || []}) {
                 foreach my $rule (@{$rules}) {
                     my @sample   = $rule -> {sample} -> @*;
                     my $category = $rule -> {category};
