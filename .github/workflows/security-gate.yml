@@ -1,14 +1,9 @@
 name: Security Gate - LESIS
 
 on:
-  push:
-    branches:
-      - main
-      - develop
   pull_request:
     branches:
       - main
-      - develop
 
 permissions:
   security-events: read
