@@ -55,8 +55,8 @@ sub main {
                 ]
             );
 
-            if (@analysis) {
-                $analysis[0]->{'file'} = $file;
+            for (@analysis) {
+                $_->{file} = $file;
             }
 
             push @results, @analysis;

@@ -56,12 +56,14 @@ $ perl zarn.pl --rules rules/quick-wins.yml --source ../nozaki --sarif report.sa
 ```yaml
 rules:
   - id: '0001'
+    type: presence
     category: info
     name: Debug module enabled
     message: Debug modules can expose sensitive information and potentially create security vulnerabilities.
     sample:
       - Dumper
   - id: '0002'
+    type: presence
     category: vuln
     name: Code Injection
     message: Occur when untrusted data is executed as code, allowing attackers to run arbitrary commands on the server.
@@ -71,11 +73,34 @@ rules:
       - exec
       - qx
   - id: '0003'
+    type: presence
     category: vuln
     name: Path Traversal
     message: Occur when user input is not properly sanitized, allowing attackers to access files and directories outside of the intended directory structure.
     sample:
       - open
+  - id: '0004'
+    type: presence
+    category: vuln
+    name: Weak Criptography Algorithm
+    message: Weak algorithms like MD5 are susceptible to various attacks and should be avoided in favor of stronger alternatives to ensure the security of sensitive data.
+    sample:
+      - md5
+  - id: '0005'
+    type: presence
+    category: vuln
+    name: Weak Random Value Generator
+    message: Weak random value generators can lead to predictable values, which can be exploited by attackers to bypass security controls.
+    sample:
+      - rand
+  - id: '0006'
+    type: absence
+    category: warning
+    name: Error Suppression
+    message: Suppressing errors can make it difficult to identify and troubleshoot issues, potentially leading to security vulnerabilities.
+    sample:
+      - strict
+      - warnings
 ```
 
 ---
