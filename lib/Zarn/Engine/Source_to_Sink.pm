@@ -21,13 +21,16 @@ package Zarn::Engine::Source_to_Sink {
 
 
         if ($ast && $rules) {
-            my @absence = grep { $_->{type} && $_->{type} eq 'absence' } $rules->@*;
+            my @absence = grep { $_ -> {type} && $_ -> {type} eq 'absence' } $rules -> @*;
+            
             for my $rule (@absence) {
                 my $category = $rule -> {category};
                 my $title    = $rule -> {name};
                 my $message  = $rule -> {message};
+
                 foreach my $token ($rule -> {sample} -> @*) {
-                    if ($ast->content() !~ m/$token/xms ) {
+
+                    if ($ast -> content() !~ m/$token/xms ) {
                         push @results, {
                             category       => $category,
                             title          => $title,
@@ -41,7 +44,7 @@ package Zarn::Engine::Source_to_Sink {
                 }
             }
 
-            my @presence = grep { !($_->{type}) || $_->{type} eq 'presence' } $rules->@*;
+            my @presence = grep { !($_ -> {type}) || $_ -> {type} eq 'presence' } $rules -> @*;
 
             foreach my $token (@{$ast -> find('PPI::Token') || []}) {
                 foreach my $rule (@presence) {
