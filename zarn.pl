@@ -55,8 +55,8 @@ sub main {
                 ]
             );
 
-            if (@analysis) {
-                map { $_->{file} = $file } @analysis;
+            for (@analysis) {
+                $_->{file} = $file;
             }
 
             push @results, @analysis;
