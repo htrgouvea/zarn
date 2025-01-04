@@ -27,3 +27,9 @@ rules:
     message: Weak algorithms like MD5 are susceptible to various attacks and should be avoided in favor of stronger alternatives to ensure the security of sensitive data.
     sample:
       - md5
+  - id: '0005'
+    category: vuln
+    name: Weak Random Value Generator
+    message: Weak random value generators can lead to predictable values, which can be exploited by attackers to bypass security controls.
+    sample:
+      - rand

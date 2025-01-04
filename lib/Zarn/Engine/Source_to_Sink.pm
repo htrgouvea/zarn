@@ -43,9 +43,8 @@ package Zarn::Engine::Source_to_Sink {
 
             my @presence = grep { !($_->{type}) || $_->{type} eq 'presence' } $rules->@*;
 
-            foreach my $token (@{$ast -> find('PPI::Token')}) {
+            foreach my $token (@{$ast -> find('PPI::Token') || []}) {
                 foreach my $rule (@presence) {
-
                     my @sample   = $rule -> {sample} -> @*;
                     my $category = $rule -> {category};
                     my $title    = $rule -> {name};
