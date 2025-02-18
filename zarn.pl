@@ -13,7 +13,7 @@ use Zarn::Helper::Rules;
 use Zarn::Helper::Sarif;
 use Zarn::Engine::Source_to_Sink;
 
-our $VERSION = '0.1.0';
+our $VERSION = '0.1.1';
 
 sub main {
     my $rules = 'rules/default.yml';
@@ -27,7 +27,7 @@ sub main {
     );
 
     if ( !$source ) {
-        print "\nZarn v0.1.0"
+        print "\nZarn v0.1.1"
             . "\nCore Commands"
             . "\n==============\n"
             . "\tCommand          Description\n"
