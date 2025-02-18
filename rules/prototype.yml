@@ -6,7 +6,6 @@ rules:
     message: Occur when untrusted data is rendered as HTML without proper escaping, allowing attackers to execute malicious scripts in the context of the victim's browser.
     sample:
       - render
-  rules:
   - id: '0012'
     category: vuln
     name: Command Injection
