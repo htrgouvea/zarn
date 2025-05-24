@@ -10,7 +10,7 @@
     </a>
     <br/>
     <img src="https://github.com/htrgouvea/zarn/actions/workflows/linter.yml/badge.svg">
-    <img src="https://github.com/htrgouvea/zarn/actions/workflows/sast.yml/badge.svg">
+    <img src="https://github.com/htrgouvea/zarn/actions/workflows/zarn.yml/badge.svg">
     <img src="https://github.com/htrgouvea/zarn/actions/workflows/security-gate.yml/badge.svg">
     <img src="https://github.com/htrgouvea/zarn/actions/workflows/test-on-ubuntu.yml/badge.svg">
   </p>
