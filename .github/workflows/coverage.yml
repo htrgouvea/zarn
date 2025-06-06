@@ -2,9 +2,10 @@ name: Perl Test Coverage
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop, add-unit-tests]
   pull_request:
-
+    branches: [main, develop]
+  
 jobs:
   coverage:
     runs-on: ubuntu-latest
