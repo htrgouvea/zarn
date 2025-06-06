@@ -19,7 +19,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install libperl-dev cpanminus -y
           cpanm --local-lib=~/perl5 --installdeps .
-          cpanm --local-lib=~/perl5 Devel::Cover
+          cpanm --local-lib=~/perl5 Devel::Cover App::Prove
 
       - name: Run tests with coverage
         env:
