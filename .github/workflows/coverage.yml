@@ -5,7 +5,7 @@ on:
     branches: [main, develop, add-unit-tests]
   pull_request:
     branches: [main, develop]
-  
+
 jobs:
   coverage:
     runs-on: ubuntu-latest
@@ -18,16 +18,21 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libperl-dev cpanminus -y
-          cpanm --installdeps .
-          cpanm Devel::Cover
+          cpanm --local-lib=~/perl5 --installdeps .
+          cpanm --local-lib=~/perl5 Devel::Cover
 
       - name: Run tests with coverage
         env:
           HARNESS_PERL_SWITCHES: -MDevel::Cover
+          PERL5LIB: ${{ env.HOME }}/perl5/lib/perl5
         run: |
-          prove -l tests/
+          export PERL5LIB="$HOME/perl5/lib/perl5"
+          prove -l t
 
       - name: Extract and print total test coverage
+        env:
+          PERL5LIB: ${{ env.HOME }}/perl5/lib/perl5
         run: |
+          export PERL5LIB="$HOME/perl5/lib/perl5"
           TOTAL=$(cover -report summary | grep total | awk '{print $NF}')
           echo "Total test coverage: $TOTAL"
