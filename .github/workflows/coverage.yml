@@ -14,10 +14,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Perl and dependencies
+      - name: Install system and Perl dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libperl-dev cpanminus -y
+          sudo apt-get install -y libperl-dev cpanminus grep gawk
           cpanm --local-lib=~/perl5 --installdeps .
           cpanm --local-lib=~/perl5 Devel::Cover App::Prove
 
