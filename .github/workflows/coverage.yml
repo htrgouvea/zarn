@@ -25,14 +25,18 @@ jobs:
         env:
           HARNESS_PERL_SWITCHES: -MDevel::Cover
           PERL5LIB: ${{ env.HOME }}/perl5/lib/perl5
+          PATH: ${{ env.HOME }}/perl5/bin:${{ env.PATH }}
         run: |
           export PERL5LIB="$HOME/perl5/lib/perl5"
+          export PATH="$HOME/perl5/bin:$PATH"
           prove -l tests
 
       - name: Extract and print total test coverage
         env:
           PERL5LIB: ${{ env.HOME }}/perl5/lib/perl5
+          PATH: ${{ env.HOME }}/perl5/bin:${{ env.PATH }}
         run: |
           export PERL5LIB="$HOME/perl5/lib/perl5"
+          export PATH="$HOME/perl5/bin:$PATH"
           TOTAL=$(cover -report summary | grep total | awk '{print $NF}')
           echo "Total test coverage: $TOTAL"
