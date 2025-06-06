@@ -1,0 +1,32 @@
+name: Perl Test Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Perl and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libperl-dev cpanminus -y
+          cpanm --installdeps .
+          cpanm Devel::Cover
+
+      - name: Run tests with coverage
+        env:
+          HARNESS_PERL_SWITCHES: -MDevel::Cover
+        run: |
+          prove -l tests/
+
+      - name: Extract and print total test coverage
+        run: |
+          TOTAL=$(cover -report summary | grep total | awk '{print $NF}')
+          echo "Total test coverage: $TOTAL"
