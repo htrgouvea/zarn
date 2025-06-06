@@ -27,7 +27,7 @@ jobs:
           PERL5LIB: ${{ env.HOME }}/perl5/lib/perl5
         run: |
           export PERL5LIB="$HOME/perl5/lib/perl5"
-          prove -l t
+          prove -l tests
 
       - name: Extract and print total test coverage
         env:
