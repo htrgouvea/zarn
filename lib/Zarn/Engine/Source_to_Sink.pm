@@ -7,7 +7,7 @@ package Zarn::Engine::Source_to_Sink {
     use PPI::Document;
     use Zarn::Engine::Taint_Analysis;
 
-    our $VERSION = '0.0.2';
+    our $VERSION = '0.0.3';
 
     sub new {
         my ($self, $parameters) = @_;
@@ -59,8 +59,8 @@ package Zarn::Engine::Source_to_Sink {
                         # this is a draft source-to-sink function
                         if (defined $next_element && ref $next_element && $next_element -> content() =~ /[\$\@\%](\w+)/xms) {
                             my $taint_analysis = Zarn::Engine::Taint_Analysis -> new ([
-                                '--ast' => $ast,
-                                '--token' => $1,
+                                '--ast'   => $ast,
+                                '--token' => $1
                             ]);
 
                             if ($taint_analysis) {
