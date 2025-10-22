@@ -13,7 +13,7 @@ use Zarn::Helper::Rules;
 use Zarn::Helper::Sarif;
 use Zarn::Engine::Source_to_Sink;
 
-our $VERSION = '0.1.2';
+our $VERSION = '0.1.3';
 
 sub main {
     my $rules = 'rules/default.yml';

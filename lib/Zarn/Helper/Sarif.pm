@@ -2,11 +2,7 @@ package Zarn::Helper::Sarif {
     use strict;
     use warnings;
 
-<<<<<<< Updated upstream
-    our $VERSION = '0.0.2';
-=======
     our $VERSION = '0.0.4';
->>>>>>> Stashed changes
 
      sub new {
         my ($self, @vulnerabilities) = @_;
@@ -19,11 +15,7 @@ package Zarn::Helper::Sarif {
                     driver => {
                         name    => 'ZARN',
                         informationUri =>'"https://github.com/htrgouvea/zarn',
-<<<<<<< Updated upstream
-                        version => '0.1.0'
-=======
-                        version => '0.1.2'
->>>>>>> Stashed changes
+                        version => '0.1.3'
                     }
                 },
                 results => []
