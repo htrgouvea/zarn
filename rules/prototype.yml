@@ -6,61 +6,21 @@ rules:
     message: Occur when untrusted data is rendered as HTML without proper escaping, allowing attackers to execute malicious scripts in the context of the victim's browser.
     sample:
       - render
-  - id: '0012'
-    category: vuln
-    name: Command Injection
-    message: Command injection attacks are possible when an application passes unsafe user supplied data like form values, cookies, HTTP headers etc. to a system shell. In this attack, the attacker-supplied operating system commands are usually executed with the privileges of the vulnerable application.
-    sample:
-      - exec
-      - syscall
-      - open
-      - qx
-      - readpipe
-  - id: '0006'
-    category: vuln
-    name: Connection String Injection
-    message: A connection string injection attack can occur when dynamic string concatenation is used to build connection strings that are based on user input. If the string isn't validated and malicious text or characters not escaped, an attacker can potentially access sensitive data or other resources on the server.
-    sample:
-      - connect
-      - ora_login
   - id: '0007'
-    category: vuln
-    name: LDAP Injection
-    message: LDAP Injection is an attack used to exploit web based applications that construct LDAP statements based on user input. When an application fails to properly sanitize user input, it's possible to modify LDAP statements using a local proxy. This could result in the execution of arbitrary commands such as granting permissions to unauthorized queries, and content modification inside the LDAP tree.
-    sample:
-      - search
-      - modify
-      - moddn
-      - add
-      - bind
-      - delete
-      - compare
-  - id: '0008'
     category: vuln
     name: XSS
     message: Cross-Site Scripting (XSS) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites. XSS attacks occur when an attacker uses a web application to send malicious code, generally in the form of a browser side script, to a different end user.
     sample:
-      - print
-      - printf
-      - say
-      - echo
-      - header
       - start_html
       - end_html
-  - id: '0009'
+  - id: '0008'
     category: vuln
-    name: Remote File Inclusion
-    message: This vulnerability allows an attacker to include a file, usually exploiting a "dynamic file inclusion" mechanisms implemented in the target application. The vulnerability occurs due to the use of user-supplied input without proper validation. this can lead to issues like - Code execution, Denial of Service, Sensitive Information Disclosure,etc.
+    name: Code/Perl/Resource Injection
+    message: This attack consists of changing resource identifiers used by an application in order to perform a malicious task. When an application defines a resource type or location based on user input, such as a file name or port number, this data can be manipulated to execute or access different resources.
     sample:
       - use
       - require
-  - id: '0010'
-    category: vuln
-    name: Resource Injection
-    message: This attack consists of changing resource identifiers used by an application in order to perform a malicious task. When an application defines a resource type or location based on user input, such as a file name or port number, this data can be manipulated to execute or access different resources.
-    sample:
-      - socket
-  - id: '0011'
+  - id: '0009'
     category: vuln
     name: SQL Injection
     message: A SQL injection attack consists of insertion or “injection” of a SQL query via the input data from the client to the application. A successful SQL injection exploit can read sensitive data from the database, modify database data (Insert/Update/Delete), execute administration operations on the database (such as shutdown the DBMS), recover the content of a given file present on the DBMS file system and in some cases issue commands to the operating system.
