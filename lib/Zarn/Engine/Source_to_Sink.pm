@@ -19,7 +19,9 @@ package Zarn::Engine::Source_to_Sink {
             'rules=s' => \$rules
         );
 
-        return 0 unless ($ast && $rules);
+        if (!$ast || !$rules) {
+            return 0;
+        }
 
         my @absence = grep { $_ -> {type} && $_ -> {type} eq 'absence' } $rules -> @*;
 
@@ -52,20 +54,28 @@ package Zarn::Engine::Source_to_Sink {
                 my $title    = $rule -> {name};
                 my $message  = $rule -> {message};
 
-                next unless any { my $content = $_; scalar(any { $content =~ m/$_/xms } @sample) } $token -> content();
+                if (!(any { my $content = $_; scalar(any { $content =~ m/$_/xms } @sample) } $token -> content())) {
+                    next;
+                }
 
                 my $next_element = $token -> snext_sibling;
-                next unless (defined $next_element && ref $next_element);
+                if (!defined $next_element || !ref $next_element) {
+                    next;
+                }
 
                 my $variable_name = $next_element -> content() =~ /[\$\@\%](\w+)/xms ? $1 : undef;
-                next unless $variable_name;
+                if (!$variable_name) {
+                    next;
+                }
 
                 my $taint_analysis = Zarn::Engine::Taint_Analysis -> new ([
                     '--ast'   => $ast,
                     '--token' => $variable_name
                 ]);
 
-                next unless $taint_analysis;
+                if (!$taint_analysis) {
+                    next;
+                }
 
                 my ($line_sink, $rowchar_sink) = @{$token -> location};
                 my ($line_source, $rowchar_source) = @{$taint_analysis};
