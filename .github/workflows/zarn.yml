@@ -14,7 +14,7 @@ jobs:
   zarn:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Install Perl and cpanminus
       run: |
         sudo apt install -y make perl cpanminus
@@ -24,6 +24,6 @@ jobs:
     - name: Verify the basic usage
       run: |
         perl zarn.pl --source . --sarif zarn.sarif
-    - uses: github/codeql-action/upload-sarif@v3
+    - uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: zarn.sarif

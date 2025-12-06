@@ -1,4 +1,4 @@
-FROM perl:5.40
+FROM perl:5.42
 
 COPY . /usr/src/zarn
 WORKDIR /usr/src/zarn
