@@ -3,7 +3,7 @@ package Zarn::Helper::Files {
     use warnings;
     use File::Find::Rule;
 
-    our $VERSION = '0.0.3';
+    our $VERSION = '0.0.4';
 
     sub new {
         my ($self, $source, $ignore) = @_;
@@ -20,13 +20,14 @@ package Zarn::Helper::Files {
             my $file_rule = $rule -> new();
             $rule -> or ($exclude_rule, $file_rule);
 
-            $rule -> file -> nonempty;
+            $rule -> file -> nonempty();
             $rule -> name('*.pm', '*.t', '*.pl');
 
             my @files = $rule -> in($source);
 
             if (!@files) {
                 print "[!] Could not identify any files in: $source.\n";
+
                 return 1;
             }
 

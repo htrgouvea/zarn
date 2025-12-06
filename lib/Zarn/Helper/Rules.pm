@@ -3,7 +3,7 @@ package Zarn::Helper::Rules {
     use warnings;
     use YAML::Tiny;
 
-    our $VERSION = '0.0.2';
+    our $VERSION = '0.0.3';
 
     sub new {
         my ($self, $rules) = @_;

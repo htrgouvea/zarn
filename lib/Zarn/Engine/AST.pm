@@ -5,7 +5,7 @@ package Zarn::Engine::AST {
     use Getopt::Long;
     use PPI::Document;
 
-    our $VERSION = '0.0.6';
+    our $VERSION = '0.0.7';
 
     sub new {
         my ($self, $parameters) = @_;
