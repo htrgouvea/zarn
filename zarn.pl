@@ -79,9 +79,9 @@ sub main {
     if ($sarif) {
         my $sarif_data = Zarn::Helper::Sarif -> new(@results);
 
-        open( my $output, '>', $sarif ) or croak "Cannot open the $sarif file\n";
-        print $output encode_json($sarif_data);
-        close($output) or die "Error to close the file\n";
+        open my $output, '>', $sarif or croak "Cannot open the $sarif file\n";
+        print {$output} encode_json($sarif_data);
+        close $output or die "Error to close the file\n";
     }
 
     return 0;
