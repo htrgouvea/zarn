@@ -6,8 +6,7 @@ package Zarn::Engine::Taint_Analysis {
     use PPI::Document;
     use List::Util 'any';
 
-
-    our $VERSION = '0.0.1';
+    our $VERSION = '0.0.2';
 
     sub new {
         my ($self, $parameters) = @_;
@@ -28,7 +27,7 @@ package Zarn::Engine::Taint_Analysis {
             );
 
             if ($var_token && $var_token -> can('parent')) {
-                my @childrens = $var_token -> parent -> children;
+                my @childrens = $var_token -> parent() -> children();
 
                 # verifyng if the variable is a fixed string or a number
                 if (any {

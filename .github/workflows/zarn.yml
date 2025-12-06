@@ -13,7 +13,6 @@ on:
 jobs:
   zarn:
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v6
     - name: Install Perl and cpanminus
