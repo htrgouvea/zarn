@@ -18,6 +18,7 @@ rules:
       - exec
       - qx
       - do
+      - '`'
   - id: '0003'
     type: presence
     category: vuln
