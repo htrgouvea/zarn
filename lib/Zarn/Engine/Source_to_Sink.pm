@@ -7,16 +7,18 @@ package Zarn::Engine::Source_to_Sink {
     use PPI::Document;
     use Zarn::Engine::Taint_Analysis;
 
-    our $VERSION = '0.0.4';
+    our $VERSION = '0.0.6';
 
     sub new {
         my ($self, $parameters) = @_;
-        my ($ast, $rules, @results);
+        my ($ast, $rules, $use_dataflow, $file, @results);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
-            'ast=s'   => \$ast,
-            'rules=s' => \$rules
+            'ast=s'       => \$ast,
+            'rules=s'     => \$rules,
+            'dataflow=s'  => \$use_dataflow,
+            'file=s'      => \$file
         );
 
         if (!$ast || !$rules) {
@@ -59,6 +61,7 @@ package Zarn::Engine::Source_to_Sink {
                 }
 
                 my $next_element = $token -> snext_sibling;
+                
                 if (!defined $next_element || !ref $next_element) {
                     next;
                 }
@@ -68,10 +71,18 @@ package Zarn::Engine::Source_to_Sink {
                     next;
                 }
 
-                my $taint_analysis = Zarn::Engine::Taint_Analysis -> new ([
+                my @taint_params = (
                     '--ast'   => $ast,
                     '--token' => $variable_name
-                ]);
+                );
+
+                # Enable data flow analysis if requested
+                if ($use_dataflow) {
+                    push @taint_params, '--dataflow' => '1';
+                    push @taint_params, '--file' => $file if $file;
+                }
+
+                my $taint_analysis = Zarn::Engine::Taint_Analysis -> new (\@taint_params);
 
                 if (!$taint_analysis) {
                     next;

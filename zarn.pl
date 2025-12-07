@@ -13,17 +13,17 @@ use Zarn::Helper::Rules;
 use Zarn::Helper::Sarif;
 use Zarn::Engine::Source_to_Sink;
 
-our $VERSION = '0.1.3';
+our $VERSION = '0.2.0';
 
 sub main {
     my $rules = 'rules/default.yml';
     my ($source, $ignore, $sarif, @results);
 
     Getopt::Long::GetOptions(
-        'r|rules=s'   => \$rules,
-        's|source=s'  => \$source,
-        'i|ignore=s'  => \$ignore,
-        'srf|sarif=s' => \$sarif
+        'r|rules=s'     => \$rules,
+        's|source=s'    => \$source,
+        'i|ignore=s'    => \$ignore,
+        'srf|sarif=s'   => \$sarif
     );
 
     if ( !$source ) {
@@ -48,12 +48,12 @@ sub main {
         if (@rules) {
             my $ast = Zarn::Engine::AST -> new(['--file' => $file]);
 
-            my @analysis = Zarn::Engine::Source_to_Sink -> new (
-                [
-                    '--ast'   => $ast,
-                    '--rules' => @rules
-                ]
-            );
+            my @analysis = Zarn::Engine::Source_to_Sink -> new ([
+                '--ast'      => $ast,
+                '--rules'    => @rules,
+                '--dataflow' => '1',
+                '--file'     => $file
+            ]);
 
             for (@analysis) {
                 $_ -> {file} = $file;
