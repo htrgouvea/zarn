@@ -39,8 +39,8 @@ package Zarn::Engine::Taint_Analysis {
                 my @childrens = $var_token -> parent() -> children();
 
                 # verifyng if the variable is a fixed string or a number
+                # Note: double-quoted strings can contain interpolated variables, so they are not safe
                 if (any {
-                    $_ -> isa('PPI::Token::Quote::Double') ||
                     $_ -> isa('PPI::Token::Quote::Single') ||
                     $_ -> isa('PPI::Token::Number')
                 } @childrens) {

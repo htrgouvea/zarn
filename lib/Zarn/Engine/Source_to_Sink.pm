@@ -60,15 +60,28 @@ package Zarn::Engine::Source_to_Sink {
                     next;
                 }
 
-                my $next_element = $token -> snext_sibling;
-                
-                if (!defined $next_element || !ref $next_element) {
-                    next;
+                my $variable_name;
+
+                if (ref($token) eq 'PPI::Token::QuoteLike::Backtick') {
+                    $variable_name = $token -> content() =~ /[\$\@\%](\w+)/xms ? $1 : undef;
+
+                    if (!$variable_name) {
+                        next;
+                    }
                 }
 
-                my $variable_name = $next_element -> content() =~ /[\$\@\%](\w+)/xms ? $1 : undef;
                 if (!$variable_name) {
-                    next;
+                    my $next_element = $token -> snext_sibling;
+
+                    if (!defined $next_element || !ref $next_element) {
+                        next;
+                    }
+
+                    $variable_name = $next_element -> content() =~ /[\$\@\%](\w+)/xms ? $1 : undef;
+
+                    if (!$variable_name) {
+                        next;
+                    }
                 }
 
                 my @taint_params = (
