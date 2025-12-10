@@ -1,13 +1,13 @@
-package Zarn::Engine::Source_to_Sink {
+package Zarn::Network::Source_to_Sink {
     use strict;
     use warnings;
     use PPI::Find;
     use Getopt::Long;
     use List::Util 'any';
     use PPI::Document;
-    use Zarn::Engine::Taint_Analysis;
+    use Zarn::Network::DataFlowAnalyzer;
 
-    our $VERSION = '0.0.6';
+    our $VERSION = '0.1.0';
 
     sub new {
         my ($self, $parameters) = @_;
@@ -84,18 +84,30 @@ package Zarn::Engine::Source_to_Sink {
                     }
                 }
 
-                my @taint_params = (
-                    '--ast'   => $ast,
-                    '--token' => $variable_name
-                );
+                my $taint_analysis;
 
-                # Enable data flow analysis if requested
-                if ($use_dataflow) {
-                    push @taint_params, '--dataflow' => '1';
-                    push @taint_params, '--file' => $file if $file;
+                if ($use_dataflow && $file) {
+                    my $df_engine = Zarn::Network::DataFlowAnalyzer -> new([
+                        '--ast'  => $ast,
+                        '--file' => $file
+                    ]);
+
+                    $df_engine -> {build_data_flow_graph} -> ();
+
+                    my $var_token = $ast -> find_first(
+                        sub {
+                            $_[1] -> isa('PPI::Token::Symbol') and
+                            ($_[1] -> content eq "\$$variable_name")
+                        }
+                    );
+
+                    if ($var_token) {
+                        my $location = $var_token -> location();
+                        my $line = $location -> [0];
+
+                        $taint_analysis = $df_engine -> {is_tainted} -> ($variable_name, $line);
+                    }
                 }
-
-                my $taint_analysis = Zarn::Engine::Taint_Analysis -> new (\@taint_params);
 
                 if (!$taint_analysis) {
                     next;
