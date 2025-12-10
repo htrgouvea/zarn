@@ -1,11 +1,11 @@
-package Zarn::Engine::AST {
+package Zarn::Component::Engine::ASTParser {
     use strict;
     use warnings;
     use PPI::Find;
     use Getopt::Long;
     use PPI::Document;
 
-    our $VERSION = '0.0.7';
+    our $VERSION = '0.1.0';
 
     sub new {
         my ($self, $parameters) = @_;
