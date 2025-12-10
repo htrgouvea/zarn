@@ -1,4 +1,4 @@
-package Zarn::Helper::Rules {
+package Zarn::Component::Utils::Rules {
     use strict;
     use warnings;
     use YAML::Tiny;
