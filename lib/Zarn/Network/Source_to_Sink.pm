@@ -1,22 +1,24 @@
-package Zarn::Engine::Source_to_Sink {
+package Zarn::Network::Source_to_Sink {
     use strict;
     use warnings;
     use PPI::Find;
     use Getopt::Long;
     use List::Util 'any';
     use PPI::Document;
-    use Zarn::Engine::Taint_Analysis;
+    use Zarn::Network::DataFlowAnalyzer;
 
-    our $VERSION = '0.0.5';
+    our $VERSION = '0.1.0';
 
     sub new {
         my ($self, $parameters) = @_;
-        my ($ast, $rules, @results);
+        my ($ast, $rules, $use_dataflow, $file, @results);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
-            'ast=s'   => \$ast,
-            'rules=s' => \$rules
+            'ast=s'       => \$ast,
+            'rules=s'     => \$rules,
+            'dataflow=s'  => \$use_dataflow,
+            'file=s'      => \$file
         );
 
         if (!$ast || !$rules) {
@@ -82,10 +84,30 @@ package Zarn::Engine::Source_to_Sink {
                     }
                 }
 
-                my $taint_analysis = Zarn::Engine::Taint_Analysis -> new ([
-                    '--ast'   => $ast,
-                    '--token' => $variable_name
-                ]);
+                my $taint_analysis;
+
+                if ($use_dataflow && $file) {
+                    my $df_engine = Zarn::Network::DataFlowAnalyzer -> new([
+                        '--ast'  => $ast,
+                        '--file' => $file
+                    ]);
+
+                    $df_engine -> {build_data_flow_graph} -> ();
+
+                    my $var_token = $ast -> find_first(
+                        sub {
+                            $_[1] -> isa('PPI::Token::Symbol') and
+                            ($_[1] -> content eq "\$$variable_name")
+                        }
+                    );
+
+                    if ($var_token) {
+                        my $location = $var_token -> location();
+                        my $line = $location -> [0];
+
+                        $taint_analysis = $df_engine -> {is_tainted} -> ($variable_name, $line);
+                    }
+                }
 
                 if (!$taint_analysis) {
                     next;

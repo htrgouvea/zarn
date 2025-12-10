@@ -7,23 +7,23 @@ use Carp;
 use JSON;
 use lib './lib/';
 use Getopt::Long;
-use Zarn::Engine::AST;
-use Zarn::Helper::Files;
-use Zarn::Helper::Rules;
-use Zarn::Helper::Sarif;
-use Zarn::Engine::Source_to_Sink;
+use Zarn::Component::Engine::ASTParser;
+use Zarn::Component::Utils::Files;
+use Zarn::Component::Utils::Rules;
+use Zarn::Component::Utils::Sarif;
+use Zarn::Network::Source_to_Sink;
 
-our $VERSION = '0.1.3';
+our $VERSION = '0.2.2';
 
 sub main {
     my $rules = 'rules/default.yml';
     my ($source, $ignore, $sarif, @results);
 
     Getopt::Long::GetOptions(
-        'r|rules=s'   => \$rules,
-        's|source=s'  => \$source,
-        'i|ignore=s'  => \$ignore,
-        'srf|sarif=s' => \$sarif
+        'r|rules=s'     => \$rules,
+        's|source=s'    => \$source,
+        'i|ignore=s'    => \$ignore,
+        'srf|sarif=s'   => \$sarif
     );
 
     if ( !$source ) {
@@ -41,19 +41,19 @@ sub main {
         return 0;
     }
 
-    my @rules = Zarn::Helper::Rules -> new($rules);
-    my @files = Zarn::Helper::Files -> new($source, $ignore);
+    my @rules = Zarn::Component::Utils::Rules -> new($rules);
+    my @files = Zarn::Component::Utils::Files -> new($source, $ignore);
 
     foreach my $file (@files) {
         if (@rules) {
-            my $ast = Zarn::Engine::AST -> new(['--file' => $file]);
+            my $ast = Zarn::Component::Engine::ASTParser -> new(['--file' => $file]);
 
-            my @analysis = Zarn::Engine::Source_to_Sink -> new (
-                [
-                    '--ast'   => $ast,
-                    '--rules' => @rules
-                ]
-            );
+            my @analysis = Zarn::Network::Source_to_Sink -> new ([
+                '--ast'      => $ast,
+                '--rules'    => @rules,
+                '--dataflow' => '1',
+                '--file'     => $file
+            ]);
 
             for (@analysis) {
                 $_ -> {file} = $file;
@@ -72,15 +72,16 @@ sub main {
         my $line_source    = $result -> {line_source};
         my $rowchar_source = $result -> {rowchar_source};
 
-        print
-            "[$category] - FILE:$file \t Potential: $title. \t Dangerous function on line: $line_sink:$rowchar_sink \t Data point possibility controlled: $line_source:$rowchar_source\n";
+        print "[$category] - FILE:$file \t Potential: $title. \t Dangerous function on line: $line_sink:$rowchar_sink \t Data point possibility controlled: $line_source:$rowchar_source\n";
     }
 
     if ($sarif) {
-        my $sarif_data = Zarn::Helper::Sarif -> new(@results);
+        my $sarif_data = Zarn::Component::Utils::Sarif -> new(@results);
 
         open my $output, '>', $sarif or croak "Cannot open the $sarif file\n";
+
         print {$output} encode_json($sarif_data);
+
         close $output or die "Error to close the file\n";
     }
 

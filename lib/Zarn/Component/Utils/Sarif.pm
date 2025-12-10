@@ -1,4 +1,4 @@
-package Zarn::Helper::Sarif {
+package Zarn::Component::Utils::Sarif {
     use strict;
     use warnings;
 
