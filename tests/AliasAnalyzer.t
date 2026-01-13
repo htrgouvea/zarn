@@ -1,0 +1,40 @@
+use strict;
+use warnings;
+use Test::More;
+use PPI::Document;
+use Zarn::Component::Engine::AliasAnalyzer;
+use Zarn::Component::Engine::DefUseAnalyzer;
+
+my $code = <<'PERL';
+my $source = 1;
+my $alias = \$source;
+PERL
+
+my $ast = PPI::Document -> new(\$code);
+ok($ast, 'AST created');
+
+my $def_use_analyzer = Zarn::Component::Engine::DefUseAnalyzer -> new([
+    '--ast' => $ast,
+]);
+
+ok($def_use_analyzer, 'Def use analyzer created');
+
+my $alias_analyzer = Zarn::Component::Engine::AliasAnalyzer -> new([
+    '--ast'              => $ast,
+    '--def_use_analyzer' => $def_use_analyzer,
+]);
+
+ok($alias_analyzer, 'Alias analyzer created');
+
+$alias_analyzer -> {analyze} -> ();
+
+my @source_aliases = $def_use_analyzer -> {get_aliases} -> ('source');
+is_deeply(\@source_aliases, ['alias'], 'Alias recorded for source');
+
+my @alias_aliases = $def_use_analyzer -> {get_aliases} -> ('alias');
+is_deeply(\@alias_aliases, ['source'], 'Alias recorded for alias');
+
+my $missing_alias_analyzer = Zarn::Component::Engine::AliasAnalyzer -> new([]);
+is($missing_alias_analyzer, 0, 'Missing parameters returns 0');
+
+done_testing();
