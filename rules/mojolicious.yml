@@ -1,0 +1,29 @@
+---
+rules:
+  - id: '0007'
+    type: presence
+    category: vuln
+    name: Mojolicious XSS
+    message: Occur when untrusted data is rendered in Mojolicious templates or responses without proper escaping, allowing malicious scripts to run in the browser.
+    sample:
+      - render
+      - render_to_string
+      - render_later
+  - id: '0008'
+    type: presence
+    category: vuln
+    name: Mojolicious SSTI
+    message: Occur when user input is interpolated into Mojolicious templates or inline rendering, enabling server side template injection.
+    sample:
+      - inline
+      - template
+      - renderer
+  - id: '0009'
+    type: presence
+    category: vuln
+    name: Mojolicious WebSocket Cross Hijacking
+    message: Occur when WebSocket connections lack origin or session validation, allowing cross-site WebSocket hijacking.
+    sample:
+      - websocket
+      - on
+      - send
