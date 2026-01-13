@@ -63,7 +63,12 @@ package Zarn::Network::Source_to_Sink {
                 my $variable_name;
 
                 if (ref($token) eq 'PPI::Token::QuoteLike::Backtick') {
-                    $variable_name = $token -> content() =~ /[\$\@\%](\w+)/xms ? $1 : undef;
+                    my $token_content = $token -> content();
+                    $variable_name = undef;
+
+                    if ($token_content =~ /[\$\@\%](\w+)/xms) {
+                        $variable_name = $1;
+                    }
 
                     if (!$variable_name) {
                         next;
@@ -77,7 +82,12 @@ package Zarn::Network::Source_to_Sink {
                         next;
                     }
 
-                    $variable_name = $next_element -> content() =~ /[\$\@\%](\w+)/xms ? $1 : undef;
+                    my $next_content = $next_element -> content();
+                    $variable_name = undef;
+
+                    if ($next_content =~ /[\$\@\%](\w+)/xms) {
+                        $variable_name = $1;
+                    }
 
                     if (!$variable_name) {
                         next;
