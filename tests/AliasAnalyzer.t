@@ -37,4 +37,29 @@ is_deeply(\@alias_aliases, ['source'], 'Alias recorded for alias');
 my $missing_alias_analyzer = Zarn::Component::Engine::AliasAnalyzer -> new([]);
 is($missing_alias_analyzer, 0, 'Missing parameters returns 0');
 
+my $extra_code = <<'PERL';
+my $value = 1;
+my $not_alias = \5;
+PERL
+
+my $extra_ast = PPI::Document -> new(\$extra_code);
+ok($extra_ast, 'Extra AST created');
+
+my $extra_def_use = Zarn::Component::Engine::DefUseAnalyzer -> new([
+    '--ast' => $extra_ast,
+]);
+
+ok($extra_def_use, 'Extra def use analyzer created');
+
+my $extra_alias_analyzer = Zarn::Component::Engine::AliasAnalyzer -> new([
+    '--ast'              => $extra_ast,
+    '--def_use_analyzer' => $extra_def_use,
+]);
+
+ok($extra_alias_analyzer, 'Extra alias analyzer created');
+$extra_alias_analyzer -> {analyze} -> ();
+
+my @value_aliases = $extra_def_use -> {get_aliases} -> ('value');
+is(scalar @value_aliases, 0, 'No aliases recorded for non-symbol casts');
+
 done_testing();

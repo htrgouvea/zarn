@@ -56,4 +56,63 @@ ok($presence_result, 'Presence rule result present');
 is($presence_result -> {line_sink}, 2, 'Presence rule line sink');
 is($presence_result -> {line_source}, 1, 'Presence rule line source');
 
+my $missing_params = Zarn::Network::Source_to_Sink -> new([]);
+is($missing_params, 0, 'Missing parameters returns 0');
+
+my $extra_code = <<'PERL';
+my $input = <STDIN>;
+`echo $input`;
+`echo hi`;
+system
+PERL
+
+my $extra_ast = PPI::Document -> new(\$extra_code);
+ok($extra_ast, 'Extra AST created');
+
+my ($extra_fh, $extra_filename) = tempfile();
+print $extra_fh $extra_code;
+close $extra_fh;
+
+my $extra_rules = [
+    {
+        name     => 'Backtick exec',
+        category => 'security',
+        message  => 'backtick execution',
+        sample   => ['echo'],
+    },
+    {
+        name     => 'System call',
+        category => 'security',
+        message  => 'system call',
+        sample   => ['system'],
+    },
+];
+
+my @extra_results = Zarn::Network::Source_to_Sink -> new([
+    '--ast'      => $extra_ast,
+    '--rules'    => $extra_rules,
+    '--dataflow' => 1,
+    '--file'     => $extra_filename,
+]);
+
+is(scalar @extra_results, 1, 'One backtick result returned');
+is($extra_results[0] -> {title}, 'Backtick exec', 'Backtick result identified');
+
+my @no_flow_results = Zarn::Network::Source_to_Sink -> new([
+    '--ast'      => $extra_ast,
+    '--rules'    => $extra_rules,
+    '--dataflow' => 0,
+    '--file'     => $extra_filename,
+]);
+
+is(scalar @no_flow_results, 0, 'No results without dataflow');
+
+my @missing_file_results = Zarn::Network::Source_to_Sink -> new([
+    '--ast'      => $extra_ast,
+    '--rules'    => $extra_rules,
+    '--dataflow' => 1,
+]);
+
+is(scalar @missing_file_results, 0, 'No results without file for dataflow');
+
 done_testing();

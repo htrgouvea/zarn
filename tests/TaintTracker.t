@@ -58,6 +58,58 @@ while ($safe_next = $safe_next -> snext_sibling()) {
 my $safe_tainted = $tracker -> {is_value_tainted} -> (\@safe_tokens);
 is($safe_tainted, 0, 'Safe value not tainted');
 
+is($tracker -> {is_tainted} -> (undef, 1), 0, 'Missing variable not tainted');
+is($tracker -> {is_value_tainted} -> (undef), 0, 'Undefined value not tainted');
+is($tracker -> {is_value_tainted} -> ('not_array'), 0, 'Non-array value not tainted');
+is($tracker -> {is_value_tainted} -> (['literal']), 0, 'Non-ref token skipped');
+
+$def_use_analyzer -> {add_definition} -> ('tainted_var', {
+    location => [1, 1],
+    tainted  => 1,
+});
+
+$def_use_analyzer -> {add_definition} -> ('plain_var', {
+    location => [1, 1],
+    tainted  => 0,
+});
+
+my $extra_code = <<'PERL';
+my $tainted_var = 1;
+my $plain_var = 2;
+my $interpolated = "$user";
+my $env = $ENV{PATH};
+my $sum = 1 + 2;
+PERL
+
+my $extra_ast = PPI::Document -> new(\$extra_code);
+ok($extra_ast, 'Extra AST created');
+
+my $tainted_symbol = $extra_ast -> find_first(sub {
+    $_[1] -> isa('PPI::Token::Symbol') && $_[1] -> content() eq '$tainted_var'
+});
+ok($tainted_symbol, 'Tainted symbol token found');
+ok($tracker -> {is_value_tainted} -> ([$tainted_symbol]), 'Symbol tainted via definition');
+
+my $plain_symbol = $extra_ast -> find_first(sub {
+    $_[1] -> isa('PPI::Token::Symbol') && $_[1] -> content() eq '$plain_var'
+});
+ok($plain_symbol, 'Plain symbol token found');
+is($tracker -> {is_value_tainted} -> ([$plain_symbol]), 0, 'Symbol without tainted definition not tainted');
+
+my $quote_token = $extra_ast -> find_first('PPI::Token::Quote::Double');
+ok($quote_token, 'Double quote token found');
+ok($tracker -> {is_value_tainted} -> ([$quote_token]), 'Interpolation taints value');
+
+my $subscript_token = $extra_ast -> find_first('PPI::Structure::Subscript');
+ok($subscript_token, 'Subscript token found');
+ok($tracker -> {is_value_tainted} -> ([$subscript_token]), 'Subscript taint source detected');
+
+my $operator_token = $extra_ast -> find_first(sub {
+    $_[1] -> isa('PPI::Token::Operator') && $_[1] -> content() eq q{+}
+});
+ok($operator_token, 'Operator token found');
+ok($tracker -> {is_value_tainted} -> ([$operator_token]), 'Non-assignment operator taints value');
+
 $def_use_analyzer -> {add_definition} -> ('input', {
     location => [1, 1],
     tainted  => 1,

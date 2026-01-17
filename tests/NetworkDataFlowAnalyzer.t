@@ -51,4 +51,48 @@ my $tainted_location = $analyzer -> {is_tainted} -> ('copy', 3);
 ok($tainted_location, 'copy tainted at line 3');
 is($tainted_location -> [0], 2, 'taint source line recorded');
 
+my $extra_code = <<'PERL';
+my $decl;
+my $ok = 1;
+foo($ok, $decl);
+exit;
+1 + 2;
+if (1 == 1) { }
+PERL
+
+my $extra_ast = PPI::Document -> new(\$extra_code);
+ok($extra_ast, 'Extra AST created');
+
+my ($extra_fh, $extra_filename) = tempfile();
+print $extra_fh $extra_code;
+close $extra_fh;
+
+my $extra_analyzer = Zarn::Network::DataFlowAnalyzer -> new([
+    '--ast'  => $extra_ast,
+    '--file' => $extra_filename,
+]);
+
+ok($extra_analyzer, 'Extra analyzer created');
+my $extra_dfg = $extra_analyzer -> {build_data_flow_graph} -> ();
+ok($extra_dfg, 'Extra DFG built');
+
+my @decl_defs = $extra_analyzer -> {get_definitions} -> ('decl');
+is(scalar @decl_defs, 1, 'Declaration definition recorded');
+ok(!defined $decl_defs[0] -> {value}, 'Declaration has no value tokens');
+
+my @ok_uses = $extra_analyzer -> {get_uses} -> ('ok');
+ok(scalar @ok_uses >= 1, 'Function arg use recorded for ok');
+ok(grep({ $_ -> {context} eq 'function_arg' } @ok_uses), 'Function arg use context');
+
+my @decl_uses = $extra_analyzer -> {get_uses} -> ('decl');
+ok(scalar @decl_uses >= 1, 'Function arg use recorded for decl');
+
+my @exit_calls = $extra_analyzer -> {get_call_sites} -> ('exit');
+is(scalar @exit_calls, 1, 'Exit call recorded');
+is(scalar @{$exit_calls[0] -> {args}}, 0, 'Exit call has no args');
+
+$extra_analyzer -> {network} -> {def_use_analyzer} -> {add_alias} -> ('ok', 'alias_ok');
+my @alias_entries = $extra_analyzer -> {get_aliases} -> ('ok');
+is_deeply(\@alias_entries, ['alias_ok'], 'Aliases exposed through analyzer');
+
 done_testing();

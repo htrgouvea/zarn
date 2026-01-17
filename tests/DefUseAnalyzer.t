@@ -59,4 +59,33 @@ is(scalar @missing_uses, 0, 'missing uses empty');
 my @missing_aliases = $analyzer -> {get_aliases} -> ('missing');
 is(scalar @missing_aliases, 0, 'missing aliases empty');
 
+my @undef_defs = $analyzer -> {get_definitions} -> ();
+is(scalar @undef_defs, 0, 'Undefined definitions empty');
+
+my @undef_uses = $analyzer -> {get_uses} -> ();
+is(scalar @undef_uses, 0, 'Undefined uses empty');
+
+my @undef_aliases = $analyzer -> {get_aliases} -> ();
+is(scalar @undef_aliases, 0, 'Undefined aliases empty');
+
+my $decl_code = <<'PERL';
+my $decl;
+PERL
+
+my $decl_ast = PPI::Document -> new(\$decl_code);
+ok($decl_ast, 'Declaration AST created');
+
+my $decl_analyzer = Zarn::Component::Engine::DefUseAnalyzer -> new([
+    '--ast' => $decl_ast,
+]);
+
+ok($decl_analyzer, 'Declaration analyzer created');
+$decl_analyzer -> {build_chains} -> ();
+
+my @decl_uses = $decl_analyzer -> {get_uses} -> ('decl');
+is(scalar @decl_uses, 0, 'Declaration not counted as use');
+
+my $missing_analyzer = Zarn::Component::Engine::DefUseAnalyzer -> new([]);
+is($missing_analyzer, 0, 'Missing AST returns 0');
+
 done_testing();
