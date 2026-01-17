@@ -23,14 +23,32 @@ package Zarn::Component::Engine::DefUseAnalyzer {
             my $get_use_context = sub {
                 my ($symbol) = @_;
 
-                my $parent = $symbol -> parent();
+                my $statement = $symbol -> parent();
+                while ($statement && !$statement -> isa('PPI::Statement')) {
+                    $statement = $statement -> parent();
+                }
 
-                if ($parent -> isa('PPI::Statement::Sub')) {
+                if ($statement && $statement -> isa('PPI::Statement::Sub')) {
                     return 'function_definition';
                 }
 
-                if (my $word = $parent -> find_first('PPI::Token::Word')) {
-                    return 'function_arg';
+                if ($statement && $statement -> isa('PPI::Statement::Break')) {
+                    return 'expression';
+                }
+
+                if ($statement) {
+                    my $first = $statement -> first_token();
+
+                    if ($first && $first -> isa('PPI::Token::Word')) {
+                        my $word = $first -> content();
+                        my %non_function = map { $_ => 1 } qw(
+                            return my our state local sub if unless while for foreach given when
+                        );
+
+                        if (!$non_function{$word}) {
+                            return 'function_arg';
+                        }
+                    }
                 }
 
                 return 'expression';
@@ -56,19 +74,41 @@ package Zarn::Component::Engine::DefUseAnalyzer {
             my $build_def_use_chains = sub {
                 my $symbols = $ast -> find('PPI::Token::Symbol') || [];
 
+                my $is_declaration_symbol = sub {
+                    my ($symbol) = @_;
+
+                    my $parent = $symbol -> parent();
+                    return 0 if !$parent -> isa('PPI::Statement::Variable');
+
+                    my $assignment = $parent -> find_first(sub {
+                        return $_[1] -> isa('PPI::Token::Operator')
+                            && $_[1] -> content() eq q{=};
+                    });
+
+                    return 1 if !$assignment;
+
+                    my $symbol_location = $symbol -> location();
+                    my $assignment_location = $assignment -> location();
+
+                    return 0 if !$symbol_location || !$assignment_location;
+
+                    return 1 if $symbol_location -> [0] < $assignment_location -> [0];
+                    return 0 if $symbol_location -> [0] > $assignment_location -> [0];
+
+                    return $symbol_location -> [1] <= $assignment_location -> [1];
+                };
+
                 for my $symbol (@{$symbols}) {
                     my $var_name = $symbol -> content();
                     $var_name =~ s/\A[\$\@\%]//xms;
-
-                    my $parent = $symbol -> parent();
-
-                    next if $parent -> isa('PPI::Statement::Variable');
 
                     my $next = $symbol -> snext_sibling();
 
                     if ($next && $next -> isa('PPI::Token::Operator') && $next -> content() eq q{=}) {
                         next;
                     }
+
+                    next if $is_declaration_symbol -> ($symbol);
 
                     $add_use -> ($var_name, {
                         location => $symbol -> location(),
