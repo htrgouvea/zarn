@@ -1,0 +1,29 @@
+name: Bunkai SCA
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  bunkai:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Bunkai
+        uses: lesis-lat/bunkai@v0.0.4
+        with:
+          project-path: .
+          sarif-output: bunkai-results.sarif
+
+      - name: Upload SARIF to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: bunkai-results.sarif
