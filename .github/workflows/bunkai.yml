@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Bunkai
-        uses: lesis-lat/bunkai@0.0.3
+        uses: lesis-lat/bunkai@0.0.4
         with:
           project-path: .
           sarif-output: bunkai-results.sarif
