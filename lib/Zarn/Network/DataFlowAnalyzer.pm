@@ -9,17 +9,17 @@ package Zarn::Network::DataFlowAnalyzer {
 
     sub new {
         my ($self, $parameters) = @_;
-        my ($ast, $file);
+        my ($syntax_tree, $file);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
-            'ast=s'  => \$ast,
+            'ast=s'  => \$syntax_tree,
             'file=s' => \$file
         );
 
-        if ($ast && $file) {
+        if ($syntax_tree && $file) {
             my $network = Zarn::Network::DataFlow -> new([
-                '--ast'  => $ast,
+                '--ast'  => $syntax_tree,
                 '--file' => $file,
             ]);
 
@@ -50,12 +50,15 @@ package Zarn::Network::DataFlowAnalyzer {
                     return;
                 }
 
-                my $next = $equals;
+                my $next_token = $equals;
                 my @value_tokens;
 
-                while ($next = $next -> snext_sibling()) {
-                    last if $next -> isa('PPI::Token::Structure') && $next -> content() eq q{;};
-                    push @value_tokens, $next;
+                while ($next_token = $next_token -> snext_sibling()) {
+                    if ($next_token -> isa('PPI::Token::Structure') && $next_token -> content() eq q{;}) {
+                        last;
+                    }
+
+                    push @value_tokens, $next_token;
                 }
 
                 return \@value_tokens;
@@ -79,12 +82,12 @@ package Zarn::Network::DataFlowAnalyzer {
             $process_function_call = sub {
                 my ($statement, $word) = @_;
 
-                my $func_name = $word -> content();
+                my $function_name = $word -> content();
                 my $location = $word -> location();
 
                 my @args = $extract_function_args -> ($statement);
 
-                $add_call_site -> ($func_name, $location, \@args);
+                $add_call_site -> ($function_name, $location, \@args);
 
                 my $def_use_analyzer = $network -> {def_use_analyzer};
 
@@ -96,7 +99,7 @@ package Zarn::Network::DataFlowAnalyzer {
                         $def_use_analyzer -> {add_use} -> ($var_name, {
                             location => $arg -> location(),
                             context  => 'function_arg',
-                            function => $func_name,
+                            function => $function_name,
                         });
                     }
                 }
@@ -181,7 +184,7 @@ package Zarn::Network::DataFlowAnalyzer {
             };
 
             $process_statements = sub {
-                my $statements = $ast -> find(sub {
+                my $statements = $syntax_tree -> find(sub {
                     $_[1] -> isa('PPI::Statement') || $_[1] -> isa('PPI::Statement::Variable')
                 }) || [];
 
@@ -193,7 +196,7 @@ package Zarn::Network::DataFlowAnalyzer {
             };
 
             my $analyzer = {
-                ast     => $ast,
+                ast     => $syntax_tree,
                 file    => $file,
                 network => $network,
                 build_data_flow_graph => sub {

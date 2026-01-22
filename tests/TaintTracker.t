@@ -10,11 +10,11 @@ my $value = $ENV{PATH};
 my $safe = 'ok';
 PERL
 
-my $ast = PPI::Document -> new(\$code);
-ok($ast, 'AST created');
+my $syntax_tree = PPI::Document -> new(\$code);
+ok($syntax_tree, 'AST created');
 
 my $def_use_analyzer = Zarn::Component::Engine::DefUseAnalyzer -> new([
-    '--ast' => $ast,
+    '--ast' => $syntax_tree,
 ]);
 
 ok($def_use_analyzer, 'Def use analyzer created');
@@ -25,22 +25,25 @@ my $tracker = Zarn::Component::Engine::TaintTracker -> new([
 
 ok($tracker, 'Taint tracker created');
 
-my $statement = $ast -> find_first('PPI::Statement');
+my $statement = $syntax_tree -> find_first('PPI::Statement');
 my $operator = $statement -> find_first(sub {
     $_[1] -> isa('PPI::Token::Operator') && $_[1] -> content() eq q{=}
 });
 
 my @value_tokens;
-my $next = $operator;
-while ($next = $next -> snext_sibling()) {
-    last if $next -> isa('PPI::Token::Structure') && $next -> content() eq q{;};
-    push @value_tokens, $next;
+my $next_token = $operator;
+while ($next_token = $next_token -> snext_sibling()) {
+    if ($next_token -> isa('PPI::Token::Structure') && $next_token -> content() eq q{;}) {
+        last;
+    }
+
+    push @value_tokens, $next_token;
 }
 
 my $tainted = $tracker -> {is_value_tainted} -> (\@value_tokens);
 ok($tainted, 'Value tokens tainted');
 
-my $safe_statement = $ast -> find_first(sub {
+my $safe_statement = $syntax_tree -> find_first(sub {
     $_[1] -> isa('PPI::Statement') && $_[1] -> content() =~ /\$safe/xms
 });
 
@@ -49,10 +52,13 @@ my $safe_operator = $safe_statement -> find_first(sub {
 });
 
 my @safe_tokens;
-my $safe_next = $safe_operator;
-while ($safe_next = $safe_next -> snext_sibling()) {
-    last if $safe_next -> isa('PPI::Token::Structure') && $safe_next -> content() eq q{;};
-    push @safe_tokens, $safe_next;
+my $safe_next_token = $safe_operator;
+while ($safe_next_token = $safe_next_token -> snext_sibling()) {
+    if ($safe_next_token -> isa('PPI::Token::Structure') && $safe_next_token -> content() eq q{;}) {
+        last;
+    }
+
+    push @safe_tokens, $safe_next_token;
 }
 
 my $safe_tainted = $tracker -> {is_value_tainted} -> (\@safe_tokens);
@@ -81,30 +87,30 @@ my $env = $ENV{PATH};
 my $sum = 1 + 2;
 PERL
 
-my $extra_ast = PPI::Document -> new(\$extra_code);
-ok($extra_ast, 'Extra AST created');
+my $extra_syntax_tree = PPI::Document -> new(\$extra_code);
+ok($extra_syntax_tree, 'Extra AST created');
 
-my $tainted_symbol = $extra_ast -> find_first(sub {
+my $tainted_symbol = $extra_syntax_tree -> find_first(sub {
     $_[1] -> isa('PPI::Token::Symbol') && $_[1] -> content() eq '$tainted_var'
 });
 ok($tainted_symbol, 'Tainted symbol token found');
 ok($tracker -> {is_value_tainted} -> ([$tainted_symbol]), 'Symbol tainted via definition');
 
-my $plain_symbol = $extra_ast -> find_first(sub {
+my $plain_symbol = $extra_syntax_tree -> find_first(sub {
     $_[1] -> isa('PPI::Token::Symbol') && $_[1] -> content() eq '$plain_var'
 });
 ok($plain_symbol, 'Plain symbol token found');
 is($tracker -> {is_value_tainted} -> ([$plain_symbol]), 0, 'Symbol without tainted definition not tainted');
 
-my $quote_token = $extra_ast -> find_first('PPI::Token::Quote::Double');
+my $quote_token = $extra_syntax_tree -> find_first('PPI::Token::Quote::Double');
 ok($quote_token, 'Double quote token found');
 ok($tracker -> {is_value_tainted} -> ([$quote_token]), 'Interpolation taints value');
 
-my $subscript_token = $extra_ast -> find_first('PPI::Structure::Subscript');
+my $subscript_token = $extra_syntax_tree -> find_first('PPI::Structure::Subscript');
 ok($subscript_token, 'Subscript token found');
 ok($tracker -> {is_value_tainted} -> ([$subscript_token]), 'Subscript taint source detected');
 
-my $operator_token = $extra_ast -> find_first(sub {
+my $operator_token = $extra_syntax_tree -> find_first(sub {
     $_[1] -> isa('PPI::Token::Operator') && $_[1] -> content() eq q{+}
 });
 ok($operator_token, 'Operator token found');

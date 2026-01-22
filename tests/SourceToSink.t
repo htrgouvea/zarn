@@ -10,8 +10,8 @@ my $input = <STDIN>;
 system $input;
 PERL
 
-my $ast = PPI::Document -> new(\$code);
-ok($ast, 'AST created');
+my $syntax_tree = PPI::Document -> new(\$code);
+ok($syntax_tree, 'AST created');
 
 my ($fh, $filename) = tempfile();
 print $fh $code;
@@ -34,7 +34,7 @@ my $rules = [
 ];
 
 my @results = Zarn::Network::Source_to_Sink -> new([
-    '--ast'      => $ast,
+    '--ast'      => $syntax_tree,
     '--rules'    => $rules,
     '--dataflow' => 1,
     '--file'     => $filename,
@@ -66,8 +66,8 @@ my $input = <STDIN>;
 system
 PERL
 
-my $extra_ast = PPI::Document -> new(\$extra_code);
-ok($extra_ast, 'Extra AST created');
+my $extra_syntax_tree = PPI::Document -> new(\$extra_code);
+ok($extra_syntax_tree, 'Extra AST created');
 
 my ($extra_fh, $extra_filename) = tempfile();
 print $extra_fh $extra_code;
@@ -89,7 +89,7 @@ my $extra_rules = [
 ];
 
 my @extra_results = Zarn::Network::Source_to_Sink -> new([
-    '--ast'      => $extra_ast,
+    '--ast'      => $extra_syntax_tree,
     '--rules'    => $extra_rules,
     '--dataflow' => 1,
     '--file'     => $extra_filename,
@@ -99,7 +99,7 @@ is(scalar @extra_results, 1, 'One backtick result returned');
 is($extra_results[0] -> {title}, 'Backtick exec', 'Backtick result identified');
 
 my @no_flow_results = Zarn::Network::Source_to_Sink -> new([
-    '--ast'      => $extra_ast,
+    '--ast'      => $extra_syntax_tree,
     '--rules'    => $extra_rules,
     '--dataflow' => 0,
     '--file'     => $extra_filename,
@@ -108,7 +108,7 @@ my @no_flow_results = Zarn::Network::Source_to_Sink -> new([
 is(scalar @no_flow_results, 0, 'No results without dataflow');
 
 my @missing_file_results = Zarn::Network::Source_to_Sink -> new([
-    '--ast'      => $extra_ast,
+    '--ast'      => $extra_syntax_tree,
     '--rules'    => $extra_rules,
     '--dataflow' => 1,
 ]);

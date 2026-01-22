@@ -11,17 +11,17 @@ package Zarn::Network::Source_to_Sink {
 
     sub new {
         my ($self, $parameters) = @_;
-        my ($ast, $rules, $use_dataflow, $file, @results);
+        my ($syntax_tree, $rules, $use_dataflow, $file, @results);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
-            'ast=s'       => \$ast,
+            'ast=s'       => \$syntax_tree,
             'rules=s'     => \$rules,
             'dataflow=s'  => \$use_dataflow,
             'file=s'      => \$file
         );
 
-        if (!$ast || !$rules) {
+        if (!$syntax_tree || !$rules) {
             return 0;
         }
 
@@ -33,7 +33,9 @@ package Zarn::Network::Source_to_Sink {
             my $message  = $rule -> {message};
 
             foreach my $token ($rule -> {sample} -> @*) {
-                next if ($ast -> content() =~ m/$token/xms);
+                if ($syntax_tree -> content() =~ m/$token/xms) {
+                    next;
+                }
 
                 push @results, {
                     category       => $category,
@@ -49,7 +51,7 @@ package Zarn::Network::Source_to_Sink {
 
         my @presence = grep { !($_ -> {type}) || $_ -> {type} eq 'presence' } $rules -> @*;
 
-        foreach my $token (@{$ast -> find('PPI::Token') || []}) {
+        foreach my $token (@{$syntax_tree -> find('PPI::Token') || []}) {
             foreach my $rule (@presence) {
                 my @sample   = $rule -> {sample} -> @*;
                 my $category = $rule -> {category};
@@ -97,25 +99,25 @@ package Zarn::Network::Source_to_Sink {
                 my $taint_analysis;
 
                 if ($use_dataflow && $file) {
-                    my $df_engine = Zarn::Network::DataFlowAnalyzer -> new([
-                        '--ast'  => $ast,
+                    my $data_flow_analyzer = Zarn::Network::DataFlowAnalyzer -> new([
+                        '--ast'  => $syntax_tree,
                         '--file' => $file
                     ]);
 
-                    $df_engine -> {build_data_flow_graph} -> ();
+                    $data_flow_analyzer -> {build_data_flow_graph} -> ();
 
-                    my $var_token = $ast -> find_first(
+                    my $symbol_token = $syntax_tree -> find_first(
                         sub {
                             $_[1] -> isa('PPI::Token::Symbol') and
                             ($_[1] -> content eq "\$$variable_name")
                         }
                     );
 
-                    if ($var_token) {
-                        my $location = $var_token -> location();
+                    if ($symbol_token) {
+                        my $location = $symbol_token -> location();
                         my $line = $location -> [0];
 
-                        $taint_analysis = $df_engine -> {is_tainted} -> ($variable_name, $line);
+                        $taint_analysis = $data_flow_analyzer -> {is_tainted} -> ($variable_name, $line);
                     }
                 }
 

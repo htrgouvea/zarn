@@ -14,11 +14,11 @@ sub show {
 }
 PERL
 
-my $ast = PPI::Document -> new(\$code);
-ok($ast, 'AST created');
+my $syntax_tree = PPI::Document -> new(\$code);
+ok($syntax_tree, 'AST created');
 
 my $analyzer = Zarn::Component::Engine::DefUseAnalyzer -> new([
-    '--ast' => $ast,
+    '--ast' => $syntax_tree,
 ]);
 
 ok($analyzer, 'Analyzer created');
@@ -72,11 +72,11 @@ my $decl_code = <<'PERL';
 my $decl;
 PERL
 
-my $decl_ast = PPI::Document -> new(\$decl_code);
-ok($decl_ast, 'Declaration AST created');
+my $decl_syntax_tree = PPI::Document -> new(\$decl_code);
+ok($decl_syntax_tree, 'Declaration AST created');
 
 my $decl_analyzer = Zarn::Component::Engine::DefUseAnalyzer -> new([
-    '--ast' => $decl_ast,
+    '--ast' => $decl_syntax_tree,
 ]);
 
 ok($decl_analyzer, 'Declaration analyzer created');

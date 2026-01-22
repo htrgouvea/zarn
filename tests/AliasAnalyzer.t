@@ -10,17 +10,17 @@ my $source = 1;
 my $alias = \$source;
 PERL
 
-my $ast = PPI::Document -> new(\$code);
-ok($ast, 'AST created');
+my $syntax_tree = PPI::Document -> new(\$code);
+ok($syntax_tree, 'AST created');
 
 my $def_use_analyzer = Zarn::Component::Engine::DefUseAnalyzer -> new([
-    '--ast' => $ast,
+    '--ast' => $syntax_tree,
 ]);
 
 ok($def_use_analyzer, 'Def use analyzer created');
 
 my $alias_analyzer = Zarn::Component::Engine::AliasAnalyzer -> new([
-    '--ast'              => $ast,
+    '--ast'              => $syntax_tree,
     '--def_use_analyzer' => $def_use_analyzer,
 ]);
 
@@ -42,17 +42,17 @@ my $value = 1;
 my $not_alias = \5;
 PERL
 
-my $extra_ast = PPI::Document -> new(\$extra_code);
-ok($extra_ast, 'Extra AST created');
+my $extra_syntax_tree = PPI::Document -> new(\$extra_code);
+ok($extra_syntax_tree, 'Extra AST created');
 
 my $extra_def_use = Zarn::Component::Engine::DefUseAnalyzer -> new([
-    '--ast' => $extra_ast,
+    '--ast' => $extra_syntax_tree,
 ]);
 
 ok($extra_def_use, 'Extra def use analyzer created');
 
 my $extra_alias_analyzer = Zarn::Component::Engine::AliasAnalyzer -> new([
-    '--ast'              => $extra_ast,
+    '--ast'              => $extra_syntax_tree,
     '--def_use_analyzer' => $extra_def_use,
 ]);
 
