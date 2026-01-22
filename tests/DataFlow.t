@@ -10,15 +10,15 @@ my $value = 1;
 print $value;
 PERL
 
-my $ast = PPI::Document -> new(\$code);
-ok($ast, 'AST created');
+my $syntax_tree = PPI::Document -> new(\$code);
+ok($syntax_tree, 'AST created');
 
 my ($fh, $filename) = tempfile();
 print $fh $code;
 close $fh;
 
 my $network = Zarn::Network::DataFlow -> new([
-    '--ast'  => $ast,
+    '--ast'  => $syntax_tree,
     '--file' => $filename,
 ]);
 
@@ -29,8 +29,8 @@ ok($def_use_analyzer, 'Def use analyzer present');
 
 $network -> {build_network} -> ();
 
-my $dfg = $def_use_analyzer -> {dfg};
-my $value_entries = $dfg -> {value};
+my $data_flow_graph = $def_use_analyzer -> {dfg};
+my $value_entries = $data_flow_graph -> {value};
 
 ok($value_entries, 'DFG entries recorded');
 is($value_entries -> [0] -> {type}, 'use', 'DFG use entry recorded');

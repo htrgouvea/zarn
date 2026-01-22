@@ -7,16 +7,16 @@ package Zarn::Component::Engine::DefUseAnalyzer {
 
     sub new {
         my ($self, $parameters) = @_;
-        my ($ast);
+        my ($syntax_tree);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
-            'ast=s' => \$ast
+            'ast=s' => \$syntax_tree
         );
 
-        if ($ast) {
+        if ($syntax_tree) {
             my $def_use_chains = {};
-            my $dfg            = {};
+            my $data_flow_graph = {};
             my $aliases        = {};
             my $taint_tracker  = undef;
 
@@ -60,9 +60,9 @@ package Zarn::Component::Engine::DefUseAnalyzer {
 
                 push @{$def_use_chains -> {$var_name} -> {uses}}, $use_info;
 
-                $dfg -> {$var_name} ||= [];
+                $data_flow_graph -> {$var_name} ||= [];
 
-                push @{$dfg -> {$var_name}}, {
+                push @{$data_flow_graph -> {$var_name}}, {
                     type     => 'use',
                     location => $use_info -> {location},
                     context  => $use_info -> {context},
@@ -72,28 +72,39 @@ package Zarn::Component::Engine::DefUseAnalyzer {
             };
 
             my $build_def_use_chains = sub {
-                my $symbols = $ast -> find('PPI::Token::Symbol') || [];
+                my $symbols = $syntax_tree -> find('PPI::Token::Symbol') || [];
 
                 my $is_declaration_symbol = sub {
                     my ($symbol) = @_;
 
                     my $parent = $symbol -> parent();
-                    return 0 if !$parent -> isa('PPI::Statement::Variable');
+                    if (!$parent -> isa('PPI::Statement::Variable')) {
+                        return 0;
+                    }
 
                     my $assignment = $parent -> find_first(sub {
                         return $_[1] -> isa('PPI::Token::Operator')
                             && $_[1] -> content() eq q{=};
                     });
 
-                    return 1 if !$assignment;
+                    if (!$assignment) {
+                        return 1;
+                    }
 
                     my $symbol_location = $symbol -> location();
                     my $assignment_location = $assignment -> location();
 
-                    return 0 if !$symbol_location || !$assignment_location;
+                    if (!$symbol_location || !$assignment_location) {
+                        return 0;
+                    }
 
-                    return 1 if $symbol_location -> [0] < $assignment_location -> [0];
-                    return 0 if $symbol_location -> [0] > $assignment_location -> [0];
+                    if ($symbol_location -> [0] < $assignment_location -> [0]) {
+                        return 1;
+                    }
+
+                    if ($symbol_location -> [0] > $assignment_location -> [0]) {
+                        return 0;
+                    }
 
                     return $symbol_location -> [1] <= $assignment_location -> [1];
                 };
@@ -102,13 +113,15 @@ package Zarn::Component::Engine::DefUseAnalyzer {
                     my $var_name = $symbol -> content();
                     $var_name =~ s/\A[\$\@\%]//xms;
 
-                    my $next = $symbol -> snext_sibling();
+                    my $next_token = $symbol -> snext_sibling();
 
-                    if ($next && $next -> isa('PPI::Token::Operator') && $next -> content() eq q{=}) {
+                    if ($next_token && $next_token -> isa('PPI::Token::Operator') && $next_token -> content() eq q{=}) {
                         next;
                     }
 
-                    next if $is_declaration_symbol -> ($symbol);
+                    if ($is_declaration_symbol -> ($symbol)) {
+                        next;
+                    }
 
                     $add_use -> ($var_name, {
                         location => $symbol -> location(),
@@ -121,9 +134,9 @@ package Zarn::Component::Engine::DefUseAnalyzer {
             };
 
             my $analyzer = {
-                ast            => $ast,
+                ast            => $syntax_tree,
                 def_use_chains => $def_use_chains,
-                dfg            => $dfg,
+                dfg            => $data_flow_graph,
                 aliases        => $aliases,
                 taint_tracker  => $taint_tracker,
                 set_taint_tracker => sub {
@@ -170,8 +183,8 @@ package Zarn::Component::Engine::DefUseAnalyzer {
 
                     push @{$def_use_chains -> {$var_name} -> {defs}}, $def_info;
 
-                    $dfg -> {$var_name} ||= [];
-                    push @{$dfg -> {$var_name}}, {
+                    $data_flow_graph -> {$var_name} ||= [];
+                    push @{$data_flow_graph -> {$var_name}}, {
                         type     => 'definition',
                         location => $def_info -> {location},
                         value    => $def_info -> {value},

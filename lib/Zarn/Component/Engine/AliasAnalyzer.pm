@@ -7,20 +7,20 @@ package Zarn::Component::Engine::AliasAnalyzer {
 
     sub new {
         my ($self, $parameters) = @_;
-        my ($ast, $def_use_analyzer);
+        my ($syntax_tree, $def_use_analyzer);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
-            'ast=s'              => \$ast,
+            'ast=s'              => \$syntax_tree,
             'def_use_analyzer=s' => \$def_use_analyzer
         );
 
-        if ($ast && $def_use_analyzer) {
+        if ($syntax_tree && $def_use_analyzer) {
             my $analyzer = {
-                ast              => $ast,
+                ast              => $syntax_tree,
                 def_use_analyzer => $def_use_analyzer,
                 analyze => sub {
-                    my $statements = $ast -> find('PPI::Statement') || [];
+                    my $statements = $syntax_tree -> find('PPI::Statement') || [];
 
                     for my $statement (@{$statements}) {
                         my $cast = $statement -> find_first(sub {
@@ -31,13 +31,13 @@ package Zarn::Component::Engine::AliasAnalyzer {
                             next;
                         }
 
-                        my $next = $cast -> snext_sibling();
+                        my $next_token = $cast -> snext_sibling();
 
-                        if (!$next || !$next -> isa('PPI::Token::Symbol')) {
+                        if (!$next_token || !$next_token -> isa('PPI::Token::Symbol')) {
                             next;
                         }
 
-                        my $aliased_var = $next -> content();
+                        my $aliased_var = $next_token -> content();
 
                         $aliased_var =~ s/\A[\$\@\%]//xms;
 

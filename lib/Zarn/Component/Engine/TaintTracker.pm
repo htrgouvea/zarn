@@ -105,7 +105,9 @@ package Zarn::Component::Engine::TaintTracker {
                         my $content = $token -> content();
 
                         for my $source (keys %{$taint_sources}) {
-                            return 1 if $content =~ /\Q$source\E/xms;
+                            if ($content =~ /\Q$source\E/xms) {
+                                return 1;
+                            }
                         }
 
                         if ($token -> isa('PPI::Token::Symbol')) {
@@ -114,7 +116,9 @@ package Zarn::Component::Engine::TaintTracker {
                                 $base_var =~ s/\A[\$\@\%]//xms;
                                 $source =~ s/\A[\$\@\%]//xms;
 
-                                return 1 if $base_var eq $source;
+                                if ($base_var eq $source) {
+                                    return 1;
+                                }
                             }
                         }
 
@@ -123,7 +127,9 @@ package Zarn::Component::Engine::TaintTracker {
                             if ($prev && $prev -> isa('PPI::Token::Symbol')) {
                                 my $var = $prev -> content();
                                 for my $source (keys %{$taint_sources}) {
-                                    return 1 if $var =~ /\Q$source\E/xms;
+                                    if ($var =~ /\Q$source\E/xms) {
+                                        return 1;
+                                    }
                                 }
                             }
                         }
@@ -132,7 +138,9 @@ package Zarn::Component::Engine::TaintTracker {
                             my $var_name = $content;
                             $var_name =~ s/\A[\$\@\%]//xms;
 
-                            next if exists $checking_taint -> {$var_name};
+                            if (exists $checking_taint -> {$var_name}) {
+                                next;
+                            }
 
                             $checking_taint -> {$var_name} = 1;
 

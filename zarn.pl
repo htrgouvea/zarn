@@ -46,17 +46,17 @@ sub main {
 
     foreach my $file (@files) {
         if (@rules) {
-            my $ast = Zarn::Component::Engine::ASTParser -> new(['--file' => $file]);
+            my $syntax_tree = Zarn::Component::Engine::ASTParser -> new(['--file' => $file]);
 
             my @analysis = Zarn::Network::Source_to_Sink -> new ([
-                '--ast'      => $ast,
+                '--ast'      => $syntax_tree,
                 '--rules'    => @rules,
                 '--dataflow' => '1',
                 '--file'     => $file
             ]);
 
-            for (@analysis) {
-                $_ -> {file} = $file;
+            for my $analysis_entry (@analysis) {
+                $analysis_entry -> {file} = $file;
             }
 
             push @results, @analysis;

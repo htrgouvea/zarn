@@ -11,17 +11,17 @@ package Zarn::Network::DataFlow {
 
     sub new {
         my ($self, $parameters) = @_;
-        my ($ast, $file);
+        my ($syntax_tree, $file);
 
         Getopt::Long::GetOptionsFromArray (
             $parameters,
-            'ast=s'  => \$ast,
+            'ast=s'  => \$syntax_tree,
             'file=s' => \$file
         );
 
-        if ($ast && $file) {
+        if ($syntax_tree && $file) {
             my $def_use_analyzer = Zarn::Component::Engine::DefUseAnalyzer -> new([
-                '--ast' => $ast,
+                '--ast' => $syntax_tree,
             ]);
 
             my $taint_tracker = Zarn::Component::Engine::TaintTracker -> new([
@@ -35,7 +35,7 @@ package Zarn::Network::DataFlow {
             ]);
 
             my $alias_analyzer = Zarn::Component::Engine::AliasAnalyzer -> new([
-                '--ast'              => $ast,
+                '--ast'              => $syntax_tree,
                 '--def_use_analyzer' => $def_use_analyzer,
             ]);
 
