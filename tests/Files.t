@@ -1,3 +1,5 @@
+package Tests::Files;
+
 use strict;
 use warnings;
 use Test::More;

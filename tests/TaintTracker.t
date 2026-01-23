@@ -1,3 +1,5 @@
+package Tests::TaintTracker;
+
 use strict;
 use warnings;
 use Test::More;

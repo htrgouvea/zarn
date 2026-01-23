@@ -1,3 +1,5 @@
+package Tests::DataFlow;
+
 use strict;
 use warnings;
 use Test::More;

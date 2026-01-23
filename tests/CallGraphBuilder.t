@@ -1,3 +1,5 @@
+package Tests::CallGraphBuilder;
+
 use strict;
 use warnings;
 use Test::More;
