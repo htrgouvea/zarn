@@ -2,6 +2,8 @@ package DataFlow;
 
 use strict;
 use warnings;
+
+our $VERSION = '0.01';
 use Test::More;
 use File::Temp qw(tempfile);
 use PPI::Document;
