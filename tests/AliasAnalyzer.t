@@ -1,9 +1,10 @@
 package AliasAnalyzer;
 
+our $VERSION = '0.0.1';
+
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
 use Test::More;
 use PPI::Document;
 use Zarn::Component::Engine::AliasAnalyzer;
