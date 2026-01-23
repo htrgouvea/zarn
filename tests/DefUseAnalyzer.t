@@ -1,3 +1,5 @@
+package Tests::DefUseAnalyzer;
+
 use strict;
 use warnings;
 use Test::More;

@@ -1,3 +1,5 @@
+package Tests::Rules;
+
 use strict;
 use warnings;
 use Test::More;
