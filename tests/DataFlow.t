@@ -39,3 +39,4 @@ my $missing_network = Zarn::Network::DataFlow -> new([]);
 is($missing_network, 0, 'Missing parameters returns 0');
 
 done_testing();
+1;

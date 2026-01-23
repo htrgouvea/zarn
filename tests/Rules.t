@@ -27,3 +27,4 @@ my $no_rules = Zarn::Helper::Rules -> new();
 is($no_rules, 0, 'Returns 0 when no rules file is provided');
 
 done_testing();
+1;

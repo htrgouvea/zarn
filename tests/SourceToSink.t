@@ -116,3 +116,4 @@ my @missing_file_results = Zarn::Network::Source_to_Sink -> new([
 is(scalar @missing_file_results, 0, 'No results without file for dataflow');
 
 done_testing();
+1;
