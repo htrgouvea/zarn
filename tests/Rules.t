@@ -1,5 +1,9 @@
+package main;
+
 use strict;
 use warnings;
+
+our $VERSION = '0.01';
 use Test::More;
 use Zarn::Helper::Rules;
 use File::Temp qw(tempfile);
