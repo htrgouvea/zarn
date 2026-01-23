@@ -131,3 +131,4 @@ my $missing_tracker = Zarn::Component::Engine::TaintTracker -> new([]);
 is($missing_tracker, 0, 'Missing parameters returns 0');
 
 done_testing();
+1;

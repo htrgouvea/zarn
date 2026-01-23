@@ -96,3 +96,4 @@ my @alias_entries = $extra_analyzer -> {get_aliases} -> ('ok');
 is_deeply(\@alias_entries, ['alias_ok'], 'Aliases exposed through analyzer');
 
 done_testing();
+1;

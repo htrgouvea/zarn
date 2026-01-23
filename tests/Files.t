@@ -50,3 +50,4 @@ my $no_source = Zarn::Helper::Files -> new();
 is($no_source, 0, 'Returns 0 when no source directory is provided');
 
 done_testing();
+1;

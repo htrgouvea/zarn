@@ -89,3 +89,4 @@ my $missing_analyzer = Zarn::Component::Engine::DefUseAnalyzer -> new([]);
 is($missing_analyzer, 0, 'Missing AST returns 0');
 
 done_testing();
+1;

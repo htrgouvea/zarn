@@ -63,3 +63,4 @@ my @value_aliases = $extra_def_use -> {get_aliases} -> ('value');
 is(scalar @value_aliases, 0, 'No aliases recorded for non-symbol casts');
 
 done_testing();
+1;

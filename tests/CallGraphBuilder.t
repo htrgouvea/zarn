@@ -20,3 +20,4 @@ my $no_file_builder = Zarn::Component::Engine::CallGraphBuilder -> new([]);
 is($no_file_builder, 0, 'Missing file returns 0');
 
 done_testing();
+1;
