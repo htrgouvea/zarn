@@ -1,4 +1,4 @@
-package Tests::Rules;
+package Rules;
 
 use strict;
 use warnings;

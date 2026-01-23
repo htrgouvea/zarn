@@ -1,4 +1,4 @@
-package Tests::DataFlow;
+package DataFlow;
 
 use strict;
 use warnings;

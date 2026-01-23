@@ -1,4 +1,4 @@
-package Tests::TaintTracker;
+package TaintTracker;
 
 use strict;
 use warnings;

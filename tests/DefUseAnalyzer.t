@@ -1,4 +1,4 @@
-package Tests::DefUseAnalyzer;
+package DefUseAnalyzer;
 
 use strict;
 use warnings;

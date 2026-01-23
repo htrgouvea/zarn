@@ -1,4 +1,4 @@
-package Tests::CallGraphBuilder;
+package CallGraphBuilder;
 
 use strict;
 use warnings;

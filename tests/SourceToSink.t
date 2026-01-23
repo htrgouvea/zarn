@@ -1,4 +1,4 @@
-package Tests::SourceToSink;
+package SourceToSink;
 
 use strict;
 use warnings;
