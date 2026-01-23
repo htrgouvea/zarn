@@ -1,4 +1,4 @@
-package Tests::AliasAnalyzer;
+package AliasAnalyzer;
 
 use strict;
 use warnings;

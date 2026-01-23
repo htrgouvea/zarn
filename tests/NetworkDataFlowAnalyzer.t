@@ -1,4 +1,4 @@
-package Tests::NetworkDataFlowAnalyzer;
+package NetworkDataFlowAnalyzer;
 
 use strict;
 use warnings;

@@ -1,4 +1,4 @@
-package Tests::Files;
+package Files;
 
 use strict;
 use warnings;
