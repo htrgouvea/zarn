@@ -2,7 +2,7 @@ requires 'JSON',                '4.10';
 requires 'File::Find::Rule',    '0.35';
 requires 'Getopt::Long',        '2.58';
 requires 'YAML::Tiny',          '1.76';
-requires 'PPI::Document',       '1.283';
+requires 'PPI::Document', '1.284';
 requires 'List::Util',          '1.69';
 
 on 'test' => sub {
