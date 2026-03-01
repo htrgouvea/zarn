@@ -6,7 +6,7 @@ requires 'PPI::Document', '1.284';
 requires 'List::Util',          '1.69';
 
 on 'test' => sub {
-    requires 'Test::More',      '1.302214';
+    requires 'Test::More', '1.302219';
     requires 'Test::Exception', '0.43';
     requires 'File::Temp',      '0.2311';
     requires 'File::Path',      '2.18';
