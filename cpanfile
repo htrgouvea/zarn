@@ -3,7 +3,7 @@ requires 'File::Find::Rule',    '0.35';
 requires 'Getopt::Long',        '2.58';
 requires 'YAML::Tiny',          '1.76';
 requires 'PPI::Document', '1.284';
-requires 'List::Util',          '1.69';
+requires 'List::Util', '1.70';
 
 on 'test' => sub {
     requires 'Test::More', '1.302219';
