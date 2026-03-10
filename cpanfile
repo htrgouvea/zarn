@@ -12,6 +12,6 @@ on 'test' => sub {
     requires 'File::Path',      '2.18';
     requires 'File::Spec',      '3.94';
     requires 'File::Basename',  '5.42.0';
-    requires 'File::Find',      '5.42.0';
+    requires 'File::Find', 'v5.42.1';
     requires 'File::Slurp',     '9999.32';
 };
