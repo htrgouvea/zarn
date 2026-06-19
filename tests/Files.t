@@ -1,7 +1,10 @@
 package Files;
 
+our $VERSION = '0.0.1';
+
 use strict;
 use warnings;
+
 use Test::More;
 use File::Temp qw(tempdir);
 use File::Path qw(make_path);

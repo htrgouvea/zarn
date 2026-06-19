@@ -1,7 +1,10 @@
 package SourceToSink;
 
+our $VERSION = '0.0.1';
+
 use strict;
 use warnings;
+
 use Test::More;
 use File::Temp qw(tempfile);
 use PPI::Document;

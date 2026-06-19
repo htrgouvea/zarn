@@ -1,7 +1,10 @@
 package Rules;
 
+our $VERSION = '0.0.1';
+
 use strict;
 use warnings;
+
 use Test::More;
 use Zarn::Helper::Rules;
 use File::Temp qw(tempfile);
@@ -13,7 +16,6 @@ rules:
   - rule2
   - rule3
 END_YAML
-
 
 my ($fh, $filename) = tempfile();
 print $fh $yaml_content;

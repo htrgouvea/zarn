@@ -1,7 +1,10 @@
 package DefUseAnalyzer;
 
+our $VERSION = '0.0.1';
+
 use strict;
 use warnings;
+
 use Test::More;
 use PPI::Document;
 use Zarn::Component::Engine::DefUseAnalyzer;
