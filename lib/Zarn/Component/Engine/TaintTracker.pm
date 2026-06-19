@@ -5,6 +5,75 @@ package Zarn::Component::Engine::TaintTracker {
 
     our $VERSION = '0.1.0';
 
+    sub _check_subscript_for_taint {
+        my ($token, $taint_sources) = @_;
+
+        my $prev = $token -> sprevious_sibling();
+        return 0 if !$prev || !$prev -> isa('PPI::Token::Symbol');
+
+        my $var = $prev -> content();
+        for my $source (keys %{$taint_sources}) {
+            return 1 if $var =~ /\Q$source\E/xms;
+        }
+
+        return 0;
+    }
+
+    sub _is_token_tainted {
+        my ($token, $taint_sources, $def_use_analyzer, $checking_taint) = @_;
+
+        return 0 if !ref $token;
+
+        my $content = $token -> content();
+
+        for my $source (keys %{$taint_sources}) {
+            return 1 if $content =~ /\Q$source\E/xms;
+        }
+
+        if ($token -> isa('PPI::Token::Symbol')) {
+            for my $source (keys %{$taint_sources}) {
+                my $base_var = $content;
+                $base_var =~ s/\A[\$\@\%]//xms;
+                my $clean_source = $source;
+                $clean_source =~ s/\A[\$\@\%]//xms;
+                return 1 if $base_var eq $clean_source;
+            }
+        }
+
+        if ($token -> isa('PPI::Structure::Subscript')) {
+            return 1 if _check_subscript_for_taint($token, $taint_sources);
+        }
+
+        if ($token -> isa('PPI::Token::Symbol')) {
+            my $var_name = $content;
+            $var_name =~ s/\A[\$\@\%]//xms;
+
+            return 0 if exists $checking_taint -> {$var_name};
+
+            $checking_taint -> {$var_name} = 1;
+
+            my @defs = $def_use_analyzer -> {get_definitions} -> ($var_name);
+            for my $def (@defs) {
+                if ($def -> {tainted}) {
+                    delete $checking_taint -> {$var_name};
+                    return 1;
+                }
+            }
+
+            delete $checking_taint -> {$var_name};
+        }
+
+        if ($token -> isa('PPI::Token::Quote::Double') && $content =~ /\$/xms) {
+            return 1;
+        }
+
+        if ($token -> isa('PPI::Token::Operator') && $token -> content() ne q{=}) {
+            return 1;
+        }
+
+        return 0;
+    }
+
     sub new {
         my ($self, $parameters) = @_;
         my ($def_use_analyzer);
@@ -16,13 +85,13 @@ package Zarn::Component::Engine::TaintTracker {
 
         if ($def_use_analyzer) {
             my $taint_sources = {
-                q{@ARGV}  => 1,
-                q{$ENV}   => 1,
-                q{STDIN}  => 1,
-                q{<>}     => 1,
-                q{param}  => 1,
-                q{cookie} => 1,
-                q{header} => 1,
+                '@ARGV'  => 1,
+                '$ENV'   => 1,
+                'STDIN'  => 1,
+                '<>'     => 1,
+                'param'  => 1,
+                'cookie' => 1,
+                'header' => 1,
             };
 
             my $checking_taint = {};
@@ -89,81 +158,10 @@ package Zarn::Component::Engine::TaintTracker {
                 is_value_tainted => sub {
                     my ($value) = @_;
 
-                    if (!$value) {
-                        return 0;
-                    }
-
-                    if (ref $value ne 'ARRAY') {
-                        return 0;
-                    }
+                    return 0 if !$value || ref $value ne 'ARRAY';
 
                     for my $token (@{$value}) {
-                        if (!ref $token) {
-                            next;
-                        }
-
-                        my $content = $token -> content();
-
-                        for my $source (keys %{$taint_sources}) {
-                            if ($content =~ /\Q$source\E/xms) {
-                                return 1;
-                            }
-                        }
-
-                        if ($token -> isa('PPI::Token::Symbol')) {
-                            for my $source (keys %{$taint_sources}) {
-                                my $base_var = $content;
-                                $base_var =~ s/\A[\$\@\%]//xms;
-                                $source =~ s/\A[\$\@\%]//xms;
-
-                                if ($base_var eq $source) {
-                                    return 1;
-                                }
-                            }
-                        }
-
-                        if ($token -> isa('PPI::Structure::Subscript')) {
-                            my $prev = $token -> sprevious_sibling();
-                            if ($prev && $prev -> isa('PPI::Token::Symbol')) {
-                                my $var = $prev -> content();
-                                for my $source (keys %{$taint_sources}) {
-                                    if ($var =~ /\Q$source\E/xms) {
-                                        return 1;
-                                    }
-                                }
-                            }
-                        }
-
-                        if ($token -> isa('PPI::Token::Symbol')) {
-                            my $var_name = $content;
-                            $var_name =~ s/\A[\$\@\%]//xms;
-
-                            if (exists $checking_taint -> {$var_name}) {
-                                next;
-                            }
-
-                            $checking_taint -> {$var_name} = 1;
-
-                            my @defs = $def_use_analyzer -> {get_definitions} -> ($var_name);
-                            for my $def (@defs) {
-                                if ($def -> {tainted}) {
-                                    delete $checking_taint -> {$var_name};
-                                    return 1;
-                                }
-                            }
-
-                            delete $checking_taint -> {$var_name};
-                        }
-
-                        if ($token -> isa('PPI::Token::Quote::Double')) {
-                            if ($content =~ /\$/xms) {
-                                return 1;
-                            }
-                        }
-
-                        if ($token -> isa('PPI::Token::Operator') && $token -> content() ne q{=}) {
-                            return 1;
-                        }
+                        return 1 if _is_token_tainted($token, $taint_sources, $def_use_analyzer, $checking_taint);
                     }
 
                     return 0;
