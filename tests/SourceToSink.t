@@ -5,6 +5,8 @@ our $VERSION = '0.0.1';
 use strict;
 use warnings;
 
+use Carp qw(croak);
+use English qw(-no_match_vars);
 use Test::More;
 use File::Temp qw(tempfile);
 use PPI::Document;
@@ -19,8 +21,8 @@ my $syntax_tree = PPI::Document -> new(\$code);
 ok($syntax_tree, 'AST created');
 
 my ($fh, $filename) = tempfile();
-print $fh $code;
-close $fh;
+print {$fh} $code;
+close $fh or croak "Cannot close temp file: $OS_ERROR";
 
 my $rules = [
     {
@@ -75,8 +77,8 @@ my $extra_syntax_tree = PPI::Document -> new(\$extra_code);
 ok($extra_syntax_tree, 'Extra AST created');
 
 my ($extra_fh, $extra_filename) = tempfile();
-print $extra_fh $extra_code;
-close $extra_fh;
+print {$extra_fh} $extra_code;
+close $extra_fh or croak "Cannot close temp file: $OS_ERROR";
 
 my $extra_rules = [
     {

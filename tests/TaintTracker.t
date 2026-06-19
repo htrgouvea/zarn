@@ -96,13 +96,13 @@ my $extra_syntax_tree = PPI::Document -> new(\$extra_code);
 ok($extra_syntax_tree, 'Extra AST created');
 
 my $tainted_symbol = $extra_syntax_tree -> find_first(sub {
-    $_[1] -> isa('PPI::Token::Symbol') && $_[1] -> content() eq '$tainted_var'
+    $_[1] -> isa('PPI::Token::Symbol') && $_[1] -> content() eq '$tainted_var' ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
 });
 ok($tainted_symbol, 'Tainted symbol token found');
 ok($tracker -> {is_value_tainted} -> ([$tainted_symbol]), 'Symbol tainted via definition');
 
 my $plain_symbol = $extra_syntax_tree -> find_first(sub {
-    $_[1] -> isa('PPI::Token::Symbol') && $_[1] -> content() eq '$plain_var'
+    $_[1] -> isa('PPI::Token::Symbol') && $_[1] -> content() eq '$plain_var' ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
 });
 ok($plain_symbol, 'Plain symbol token found');
 is($tracker -> {is_value_tainted} -> ([$plain_symbol]), 0, 'Symbol without tainted definition not tainted');

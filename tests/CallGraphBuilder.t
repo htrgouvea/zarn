@@ -5,8 +5,12 @@ our $VERSION = '0.0.1';
 use strict;
 use warnings;
 
+use Readonly;
 use Test::More;
 use Zarn::Component::Engine::CallGraphBuilder;
+
+Readonly::Scalar my $SECOND_CALL_LINE => 4;
+Readonly::Scalar my $SECOND_CALL_COL  => 3;
 
 my $call_graph_builder = Zarn::Component::Engine::CallGraphBuilder -> new([
     '--file' => 'example.pl',
@@ -15,7 +19,7 @@ my $call_graph_builder = Zarn::Component::Engine::CallGraphBuilder -> new([
 ok($call_graph_builder, 'Builder created');
 
 $call_graph_builder -> {add_call_site} -> ('print', [2, 1], ['value']);
-$call_graph_builder -> {add_call_site} -> ('print', [4, 3], ['other']);
+$call_graph_builder -> {add_call_site} -> ('print', [$SECOND_CALL_LINE, $SECOND_CALL_COL], ['other']);
 
 my @print_calls = $call_graph_builder -> {get_call_sites} -> ('print');
 is(scalar @print_calls, 2, 'Call sites recorded');

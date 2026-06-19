@@ -5,6 +5,8 @@ our $VERSION = '0.0.1';
 use strict;
 use warnings;
 
+use Carp qw(croak);
+use English qw(-no_match_vars);
 use Test::More;
 use File::Temp qw(tempfile);
 use PPI::Document;
@@ -19,8 +21,8 @@ my $syntax_tree = PPI::Document -> new(\$code);
 ok($syntax_tree, 'AST created');
 
 my ($fh, $filename) = tempfile();
-print $fh $code;
-close $fh;
+print {$fh} $code;
+close $fh or croak "Cannot close temp file: $OS_ERROR";
 
 my $network = Zarn::Network::DataFlow -> new([
     '--ast'  => $syntax_tree,

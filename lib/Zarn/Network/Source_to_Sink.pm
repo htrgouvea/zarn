@@ -9,25 +9,12 @@ package Zarn::Network::Source_to_Sink {
 
     our $VERSION = '0.1.0';
 
-    sub new {
-        my ($self, $parameters) = @_;
-        my ($syntax_tree, $rules, $use_dataflow, $file, @results);
+    sub _process_absence_rules {
+        my ($syntax_tree, $absence_rules) = @_;
 
-        Getopt::Long::GetOptionsFromArray (
-            $parameters,
-            'ast=s'       => \$syntax_tree,
-            'rules=s'     => \$rules,
-            'dataflow=s'  => \$use_dataflow,
-            'file=s'      => \$file
-        );
+        my @results;
 
-        if (!$syntax_tree || !$rules) {
-            return 0;
-        }
-
-        my @absence = grep { $_ -> {type} && $_ -> {type} eq 'absence' } $rules -> @*;
-
-        for my $rule (@absence) {
+        for my $rule (@{$absence_rules}) {
             my $category = $rule -> {category};
             my $title    = $rule -> {name};
             my $message  = $rule -> {message};
@@ -49,6 +36,56 @@ package Zarn::Network::Source_to_Sink {
             }
         }
 
+        return @results;
+    }
+
+    sub _extract_variable_name {
+        my ($token) = @_;
+
+        if (ref($token) eq 'PPI::Token::QuoteLike::Backtick') {
+            my $token_content = $token -> content();
+
+            if ($token_content =~ /[\$\@\%](\w+)/xms) {
+                return $1;
+            }
+
+            return;
+        }
+
+        my $next_element = $token -> snext_sibling;
+
+        if (!defined $next_element || !ref $next_element) {
+            return;
+        }
+
+        my $next_content = $next_element -> content();
+
+        if ($next_content =~ /[\$\@\%](\w+)/xms) {
+            return $1;
+        }
+
+        return;
+    }
+
+    sub new {
+        my ($self, $parameters) = @_;
+        my ($syntax_tree, $rules, $use_dataflow, $file, @results);
+
+        Getopt::Long::GetOptionsFromArray (
+            $parameters,
+            'ast=s'       => \$syntax_tree,
+            'rules=s'     => \$rules,
+            'dataflow=s'  => \$use_dataflow,
+            'file=s'      => \$file
+        );
+
+        if (!$syntax_tree || !$rules) {
+            return 0;
+        }
+
+        my @absence = grep { $_ -> {type} && $_ -> {type} eq 'absence' } $rules -> @*;
+        push @results, _process_absence_rules($syntax_tree, \@absence);
+
         my @presence = grep { !($_ -> {type}) || $_ -> {type} eq 'presence' } $rules -> @*;
 
         foreach my $token (@{$syntax_tree -> find('PPI::Token') || []}) {
@@ -62,38 +99,10 @@ package Zarn::Network::Source_to_Sink {
                     next;
                 }
 
-                my $variable_name;
-
-                if (ref($token) eq 'PPI::Token::QuoteLike::Backtick') {
-                    my $token_content = $token -> content();
-                    $variable_name = undef;
-
-                    if ($token_content =~ /[\$\@\%](\w+)/xms) {
-                        $variable_name = $1;
-                    }
-
-                    if (!$variable_name) {
-                        next;
-                    }
-                }
+                my $variable_name = _extract_variable_name($token);
 
                 if (!$variable_name) {
-                    my $next_element = $token -> snext_sibling;
-
-                    if (!defined $next_element || !ref $next_element) {
-                        next;
-                    }
-
-                    my $next_content = $next_element -> content();
-                    $variable_name = undef;
-
-                    if ($next_content =~ /[\$\@\%](\w+)/xms) {
-                        $variable_name = $1;
-                    }
-
-                    if (!$variable_name) {
-                        next;
-                    }
+                    next;
                 }
 
                 my $taint_analysis;

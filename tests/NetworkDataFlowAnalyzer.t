@@ -5,10 +5,16 @@ our $VERSION = '0.0.1';
 use strict;
 use warnings;
 
+use Carp qw(croak);
+use English qw(-no_match_vars);
+use Readonly;
 use Test::More;
 use File::Temp qw(tempfile);
 use PPI::Document;
 use Zarn::Network::DataFlowAnalyzer;
+
+Readonly::Scalar my $PRINT_LINE       => 3;
+Readonly::Scalar my $TAINT_CHECK_LINE => 3;
 
 my $code = <<'PERL';
 my $input = <STDIN>;
@@ -20,8 +26,8 @@ my $syntax_tree = PPI::Document -> new(\$code);
 ok($syntax_tree, 'AST created');
 
 my ($fh, $filename) = tempfile();
-print $fh $code;
-close $fh;
+print {$fh} $code;
+close $fh or croak "Cannot close temp file: $OS_ERROR";
 
 my $analyzer = Zarn::Network::DataFlowAnalyzer -> new([
     '--ast'  => $syntax_tree,
@@ -50,9 +56,9 @@ is(scalar @print_calls, 1, 'print call recorded');
 is($print_calls[0] -> {file}, $filename, 'print call file recorded');
 
 my $print_location = $print_calls[0] -> {location};
-is($print_location -> [0], 3, 'print call line recorded');
+is($print_location -> [0], $PRINT_LINE, 'print call line recorded');
 
-my $tainted_location = $analyzer -> {is_tainted} -> ('copy', 3);
+my $tainted_location = $analyzer -> {is_tainted} -> ('copy', $TAINT_CHECK_LINE);
 ok($tainted_location, 'copy tainted at line 3');
 is($tainted_location -> [0], 2, 'taint source line recorded');
 
@@ -69,8 +75,8 @@ my $extra_syntax_tree = PPI::Document -> new(\$extra_code);
 ok($extra_syntax_tree, 'Extra AST created');
 
 my ($extra_fh, $extra_filename) = tempfile();
-print $extra_fh $extra_code;
-close $extra_fh;
+print {$extra_fh} $extra_code;
+close $extra_fh or croak "Cannot close temp file: $OS_ERROR";
 
 my $extra_analyzer = Zarn::Network::DataFlowAnalyzer -> new([
     '--ast'  => $extra_syntax_tree,

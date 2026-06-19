@@ -5,6 +5,8 @@ our $VERSION = '0.0.1';
 use strict;
 use warnings;
 
+use Carp qw(croak);
+use English qw(-no_match_vars);
 use Test::More;
 use Zarn::Helper::Rules;
 use File::Temp qw(tempfile);
@@ -18,13 +20,13 @@ rules:
 END_YAML
 
 my ($fh, $filename) = tempfile();
-print $fh $yaml_content;
-close $fh;
+print {$fh} $yaml_content;
+close $fh or croak "Cannot close temp file: $OS_ERROR";
 
-my @expected_rules = ('rule1', 'rule2', 'rule3');
+my @expected_rules = qw(rule1 rule2 rule3);
 my @rules = Zarn::Helper::Rules -> new($filename);
 
-my @flattened_rules = map { @$_ } @rules;
+my @flattened_rules = map { @{$_} } @rules;
 is_deeply(\@flattened_rules, \@expected_rules, 'Rules correctly loaded from YAML file');
 
 my $no_rules = Zarn::Helper::Rules -> new();

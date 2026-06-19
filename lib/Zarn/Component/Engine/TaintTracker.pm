@@ -5,6 +5,99 @@ package Zarn::Component::Engine::TaintTracker {
 
     our $VERSION = '0.1.0';
 
+    sub _check_subscript_taint {
+        my ($token, $taint_sources) = @_;
+
+        my $prev = $token -> sprevious_sibling();
+        if ($prev && $prev -> isa('PPI::Token::Symbol')) {
+            my $var = $prev -> content();
+            for my $source (keys %{$taint_sources}) {
+                if ($var =~ /\Q$source\E/xms) {
+                    return 1;
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    sub _is_value_tainted {
+        my ($value, $taint_sources, $def_use_analyzer, $checking_taint) = @_;
+
+        if (!$value) {
+            return 0;
+        }
+
+        if (ref $value ne 'ARRAY') {
+            return 0;
+        }
+
+        for my $token (@{$value}) {
+            if (!ref $token) {
+                next;
+            }
+
+            my $content = $token -> content();
+
+            for my $source (keys %{$taint_sources}) {
+                if ($content =~ /\Q$source\E/xms) {
+                    return 1;
+                }
+            }
+
+            if ($token -> isa('PPI::Token::Symbol')) {
+                for my $source (keys %{$taint_sources}) {
+                    my $base_var = $content;
+                    $base_var =~ s/\A[\$\@\%]//xms;
+                    $source =~ s/\A[\$\@\%]//xms;
+
+                    if ($base_var eq $source) {
+                        return 1;
+                    }
+                }
+            }
+
+            if ($token -> isa('PPI::Structure::Subscript')) {
+                if (_check_subscript_taint($token, $taint_sources)) {
+                    return 1;
+                }
+            }
+
+            if ($token -> isa('PPI::Token::Symbol')) {
+                my $var_name = $content;
+                $var_name =~ s/\A[\$\@\%]//xms;
+
+                if (exists $checking_taint -> {$var_name}) {
+                    next;
+                }
+
+                $checking_taint -> {$var_name} = 1;
+
+                my @defs = $def_use_analyzer -> {get_definitions} -> ($var_name);
+                for my $def (@defs) {
+                    if ($def -> {tainted}) {
+                        delete $checking_taint -> {$var_name};
+                        return 1;
+                    }
+                }
+
+                delete $checking_taint -> {$var_name};
+            }
+
+            if ($token -> isa('PPI::Token::Quote::Double')) {
+                if ($content =~ /\$/xms) {
+                    return 1;
+                }
+            }
+
+            if ($token -> isa('PPI::Token::Operator') && $token -> content() ne q{=}) {
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+
     sub new {
         my ($self, $parameters) = @_;
         my ($def_use_analyzer);
@@ -15,14 +108,14 @@ package Zarn::Component::Engine::TaintTracker {
         );
 
         if ($def_use_analyzer) {
-            my $taint_sources = {
-                q{@ARGV}  => 1,
-                q{$ENV}   => 1,
-                q{STDIN}  => 1,
-                q{<>}     => 1,
-                q{param}  => 1,
-                q{cookie} => 1,
-                q{header} => 1,
+            my $taint_sources = { ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
+                '@ARGV'  => 1,
+                '$ENV'   => 1,
+                'STDIN'  => 1,
+                '<>'     => 1,
+                'param'  => 1,
+                'cookie' => 1,
+                'header' => 1,
             };
 
             my $checking_taint = {};
@@ -88,85 +181,7 @@ package Zarn::Component::Engine::TaintTracker {
                 },
                 is_value_tainted => sub {
                     my ($value) = @_;
-
-                    if (!$value) {
-                        return 0;
-                    }
-
-                    if (ref $value ne 'ARRAY') {
-                        return 0;
-                    }
-
-                    for my $token (@{$value}) {
-                        if (!ref $token) {
-                            next;
-                        }
-
-                        my $content = $token -> content();
-
-                        for my $source (keys %{$taint_sources}) {
-                            if ($content =~ /\Q$source\E/xms) {
-                                return 1;
-                            }
-                        }
-
-                        if ($token -> isa('PPI::Token::Symbol')) {
-                            for my $source (keys %{$taint_sources}) {
-                                my $base_var = $content;
-                                $base_var =~ s/\A[\$\@\%]//xms;
-                                $source =~ s/\A[\$\@\%]//xms;
-
-                                if ($base_var eq $source) {
-                                    return 1;
-                                }
-                            }
-                        }
-
-                        if ($token -> isa('PPI::Structure::Subscript')) {
-                            my $prev = $token -> sprevious_sibling();
-                            if ($prev && $prev -> isa('PPI::Token::Symbol')) {
-                                my $var = $prev -> content();
-                                for my $source (keys %{$taint_sources}) {
-                                    if ($var =~ /\Q$source\E/xms) {
-                                        return 1;
-                                    }
-                                }
-                            }
-                        }
-
-                        if ($token -> isa('PPI::Token::Symbol')) {
-                            my $var_name = $content;
-                            $var_name =~ s/\A[\$\@\%]//xms;
-
-                            if (exists $checking_taint -> {$var_name}) {
-                                next;
-                            }
-
-                            $checking_taint -> {$var_name} = 1;
-
-                            my @defs = $def_use_analyzer -> {get_definitions} -> ($var_name);
-                            for my $def (@defs) {
-                                if ($def -> {tainted}) {
-                                    delete $checking_taint -> {$var_name};
-                                    return 1;
-                                }
-                            }
-
-                            delete $checking_taint -> {$var_name};
-                        }
-
-                        if ($token -> isa('PPI::Token::Quote::Double')) {
-                            if ($content =~ /\$/xms) {
-                                return 1;
-                            }
-                        }
-
-                        if ($token -> isa('PPI::Token::Operator') && $token -> content() ne q{=}) {
-                            return 1;
-                        }
-                    }
-
-                    return 0;
+                    return _is_value_tainted($value, $taint_sources, $def_use_analyzer, $checking_taint);
                 },
             };
 
