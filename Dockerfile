@@ -3,6 +3,6 @@ FROM perl:5.42-slim
 COPY . /usr/src/zarn
 WORKDIR /usr/src/zarn
 
-RUN cpanm --installdeps .
+RUN cpanm --installdeps --notest .
 
 ENTRYPOINT [ "perl", "./zarn.pl" ]
