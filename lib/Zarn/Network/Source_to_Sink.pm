@@ -9,7 +9,7 @@ package Zarn::Network::Source_to_Sink {
 
     our $VERSION = '0.1.0';
 
-    sub new { ## no critic (Subroutines::ProhibitExcessComplexity)
+    sub new {
         my ($self, $parameters) = @_;
         my ($syntax_tree, $rules, $use_dataflow, $file, @results);
 
@@ -25,33 +25,26 @@ package Zarn::Network::Source_to_Sink {
             return 0;
         }
 
-        my @absence = grep { $_ -> {type} && $_ -> {type} eq 'absence' } $rules -> @*;
+        my @absence = grep { ($_->{type} // q{}) eq q{absence} } $rules->@*;
 
         for my $rule (@absence) {
-            my $category = $rule -> {category};
-            my $title    = $rule -> {name};
-            my $message  = $rule -> {message};
-
-            foreach my $token ($rule -> {sample} -> @*) {
-                if ($syntax_tree -> content() =~ m/$token/xms) {
-                    next;
-                }
-
-                push @results, {
-                    category       => $category,
-                    title          => $title,
-                    message        => $message,
+            push @results,
+                map { +{
+                    category       => $rule -> {category},
+                    title          => $rule -> {name},
+                    message        => $rule -> {message},
                     line_sink      => 'n/a',
                     rowchar_sink   => 'n/a',
                     line_source    => 'n/a',
                     rowchar_source => 'n/a'
-                };
-            }
+                } }
+                grep { $syntax_tree -> content() !~ m/$_/xms }
+                $rule -> {sample} -> @*;
         }
 
-        my @presence = grep { !($_ -> {type}) || $_ -> {type} eq 'presence' } $rules -> @*;
+        my @presence = grep { ($_->{type} // q{presence}) eq q{presence} } $rules->@*;
 
-        foreach my $token (@{$syntax_tree -> find('PPI::Token') || []}) {
+        foreach my $token (@{$syntax_tree -> find('PPI::Token') // []}) {
             foreach my $rule (@presence) {
                 my @sample   = $rule -> {sample} -> @*;
                 my $category = $rule -> {category};
@@ -65,35 +58,15 @@ package Zarn::Network::Source_to_Sink {
                 my $variable_name;
 
                 if (ref($token) eq 'PPI::Token::QuoteLike::Backtick') {
-                    my $token_content = $token -> content();
-                    $variable_name = undef;
-
-                    if ($token_content =~ /[\$\@\%](\w+)/xms) {
-                        $variable_name = $1;
-                    }
-
-                    if (!$variable_name) {
-                        next;
-                    }
+                    ($variable_name) = $token -> content() =~ /[\$\@\%](\w+)/xms;
+                    next if !$variable_name;
                 }
 
                 if (!$variable_name) {
                     my $next_element = $token -> snext_sibling;
-
-                    if (!defined $next_element || !ref $next_element) {
-                        next;
-                    }
-
-                    my $next_content = $next_element -> content();
-                    $variable_name = undef;
-
-                    if ($next_content =~ /[\$\@\%](\w+)/xms) {
-                        $variable_name = $1;
-                    }
-
-                    if (!$variable_name) {
-                        next;
-                    }
+                    next if !ref $next_element;
+                    ($variable_name) = $next_element -> content() =~ /[\$\@\%](\w+)/xms;
+                    next if !$variable_name;
                 }
 
                 my $taint_analysis;

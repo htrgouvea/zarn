@@ -5,7 +5,63 @@ package Zarn::Component::Engine::DefUseAnalyzer {
 
     our $VERSION = '0.1.0';
 
-    sub new { ## no critic (Subroutines::ProhibitExcessComplexity)
+    my $_get_use_context = sub {
+        my ($symbol) = @_;
+
+        my $statement = $symbol -> parent();
+        while ($statement && !$statement -> isa('PPI::Statement')) {
+            $statement = $statement -> parent();
+        }
+
+        return 'function_definition' if $statement && $statement -> isa('PPI::Statement::Sub');
+        return 'expression' if !$statement || $statement -> isa('PPI::Statement::Break');
+
+        my $first = $statement -> first_token();
+        return 'expression' if !$first || !$first -> isa('PPI::Token::Word');
+
+        my %non_function = map { $_ => 1 } qw(
+            return my our state local sub if unless while for foreach given when
+        );
+
+        return $non_function{$first -> content()} ? 'expression' : 'function_arg';
+    };
+
+    my $_is_declaration_symbol = sub {
+        my ($symbol) = @_;
+
+        my $parent = $symbol -> parent();
+        if (!$parent -> isa('PPI::Statement::Variable')) {
+            return 0;
+        }
+
+        my $assignment = $parent -> find_first(sub {
+            return $_[1] -> isa('PPI::Token::Operator')
+                && $_[1] -> content() eq q{=};
+        });
+
+        if (!$assignment) {
+            return 1;
+        }
+
+        my $symbol_location = $symbol -> location();
+        my $assignment_location = $assignment -> location();
+
+        if (!$symbol_location || !$assignment_location) {
+            return 0;
+        }
+
+        if ($symbol_location -> [0] < $assignment_location -> [0]) {
+            return 1;
+        }
+
+        if ($symbol_location -> [0] > $assignment_location -> [0]) {
+            return 0;
+        }
+
+        return $symbol_location -> [1] <= $assignment_location -> [1];
+    };
+
+    sub new {
         my ($self, $parameters) = @_;
         my ($syntax_tree);
 
@@ -20,47 +76,13 @@ package Zarn::Component::Engine::DefUseAnalyzer {
             my $aliases        = {};
             my $taint_tracker  = undef;
 
-            my $get_use_context = sub {
-                my ($symbol) = @_;
-
-                my $statement = $symbol -> parent();
-                while ($statement && !$statement -> isa('PPI::Statement')) {
-                    $statement = $statement -> parent();
-                }
-
-                if ($statement && $statement -> isa('PPI::Statement::Sub')) {
-                    return 'function_definition';
-                }
-
-                if ($statement && $statement -> isa('PPI::Statement::Break')) {
-                    return 'expression';
-                }
-
-                if ($statement) {
-                    my $first = $statement -> first_token();
-
-                    if ($first && $first -> isa('PPI::Token::Word')) {
-                        my $word = $first -> content();
-                        my %non_function = map { $_ => 1 } qw(
-                            return my our state local sub if unless while for foreach given when
-                        );
-
-                        if (!$non_function{$word}) {
-                            return 'function_arg';
-                        }
-                    }
-                }
-
-                return 'expression';
-            };
-
             my $add_use;
             $add_use = sub {
                 my ($var_name, $use_info) = @_;
 
                 push @{$def_use_chains -> {$var_name} -> {uses}}, $use_info;
 
-                $data_flow_graph -> {$var_name} ||= [];
+                $data_flow_graph -> {$var_name} //= [];
 
                 push @{$data_flow_graph -> {$var_name}}, {
                     type     => 'use',
@@ -72,42 +94,7 @@ package Zarn::Component::Engine::DefUseAnalyzer {
             };
 
             my $build_def_use_chains = sub {
-                my $symbols = $syntax_tree -> find('PPI::Token::Symbol') || [];
-
-                my $is_declaration_symbol = sub {
-                    my ($symbol) = @_;
-
-                    my $parent = $symbol -> parent();
-                    if (!$parent -> isa('PPI::Statement::Variable')) {
-                        return 0;
-                    }
-
-                    my $assignment = $parent -> find_first(sub {
-                        return $_[1] -> isa('PPI::Token::Operator')
-                            && $_[1] -> content() eq q{=};
-                    });
-
-                    if (!$assignment) {
-                        return 1;
-                    }
-
-                    my $symbol_location = $symbol -> location();
-                    my $assignment_location = $assignment -> location();
-
-                    if (!$symbol_location || !$assignment_location) {
-                        return 0;
-                    }
-
-                    if ($symbol_location -> [0] < $assignment_location -> [0]) {
-                        return 1;
-                    }
-
-                    if ($symbol_location -> [0] > $assignment_location -> [0]) {
-                        return 0;
-                    }
-
-                    return $symbol_location -> [1] <= $assignment_location -> [1];
-                };
+                my $symbols = $syntax_tree -> find('PPI::Token::Symbol') // [];
 
                 for my $symbol (@{$symbols}) {
                     my $var_name = $symbol -> content();
@@ -119,13 +106,13 @@ package Zarn::Component::Engine::DefUseAnalyzer {
                         next;
                     }
 
-                    if ($is_declaration_symbol -> ($symbol)) {
+                    if ($_is_declaration_symbol -> ($symbol)) {
                         next;
                     }
 
                     $add_use -> ($var_name, {
                         location => $symbol -> location(),
-                        context  => $get_use_context -> ($symbol),
+                        context  => $_get_use_context -> ($symbol),
                         token    => $symbol,
                     });
                 }
@@ -158,7 +145,7 @@ package Zarn::Component::Engine::DefUseAnalyzer {
                         return ();
                     }
 
-                    return @{$def_use_chains -> {$variable_name} -> {defs} || []};
+                    return @{$def_use_chains -> {$variable_name} -> {defs} // []};
                 },
                 get_uses => sub {
                     my ($variable_name) = @_;
@@ -167,7 +154,7 @@ package Zarn::Component::Engine::DefUseAnalyzer {
                         return ();
                     }
 
-                    return @{$def_use_chains -> {$variable_name} -> {uses} || []};
+                    return @{$def_use_chains -> {$variable_name} -> {uses} // []};
                 },
                 get_aliases => sub {
                     my ($variable_name) = @_;
@@ -176,14 +163,14 @@ package Zarn::Component::Engine::DefUseAnalyzer {
                         return ();
                     }
 
-                    return @{$aliases -> {$variable_name} || []};
+                    return @{$aliases -> {$variable_name} // []};
                 },
                 add_definition => sub {
                     my ($var_name, $def_info) = @_;
 
                     push @{$def_use_chains -> {$var_name} -> {defs}}, $def_info;
 
-                    $data_flow_graph -> {$var_name} ||= [];
+                    $data_flow_graph -> {$var_name} //= [];
                     push @{$data_flow_graph -> {$var_name}}, {
                         type     => 'definition',
                         location => $def_info -> {location},

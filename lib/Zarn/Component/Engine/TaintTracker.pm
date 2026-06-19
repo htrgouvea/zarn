@@ -6,7 +6,7 @@ package Zarn::Component::Engine::TaintTracker {
 
     our $VERSION = '0.1.0';
 
-    sub new { ## no critic (Subroutines::ProhibitExcessComplexity)
+    sub new {
         my ($self, $parameters) = @_;
         my ($def_use_analyzer);
 
@@ -17,22 +17,16 @@ package Zarn::Component::Engine::TaintTracker {
 
         if ($def_use_analyzer) {
             my $taint_sources = {
-                '@ARGV'  => 1, ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
-                '$ENV'   => 1, ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
-                q{STDIN}  => 1,
-                q{<>}     => 1,
-                q{param}  => 1,
-                q{cookie} => 1,
-                q{header} => 1,
+                "\N{COMMERCIAL AT}ARGV" => 1,
+                "\N{DOLLAR SIGN}ENV"   => 1,
+                q{STDIN}   => 1,
+                q{<>}      => 1,
+                q{param}   => 1,
+                q{cookie}  => 1,
+                q{header}  => 1,
             };
 
             my $checking_taint = {};
-
-            my $is_definition_tainted = sub {
-                my ($def) = @_;
-
-                return $def -> {tainted} || 0;
-            };
 
             my $get_reaching_definitions;
 
@@ -40,31 +34,15 @@ package Zarn::Component::Engine::TaintTracker {
                 my ($variable_name, $line_number) = @_;
 
                 my @defs = $def_use_analyzer -> {get_definitions} -> ($variable_name);
-                my @reaching;
 
-                my $most_recent_def = undef;
-                my $most_recent_line = 0;
+                my ($most_recent_def) =
+                    reverse sort { $a -> {location} -> [0] <=> $b -> {location} -> [0] }
+                    grep { $_ -> {location} -> [0] <= $line_number } @defs;
 
-                for my $def (@defs) {
-                    my $def_line = $def -> {location} -> [0];
-                    if ($def_line <= $line_number && $def_line > $most_recent_line) {
-                        $most_recent_def = $def;
-                        $most_recent_line = $def_line;
-                    }
-                }
-
-                if ($most_recent_def) {
-                    push @reaching, $most_recent_def;
-                }
-
-                if (@reaching == 0) {
-                    my @aliases = $def_use_analyzer -> {get_aliases} -> ($variable_name);
-                    for my $alias (@aliases) {
-                        push @reaching, $get_reaching_definitions -> ($alias, $line_number);
-                    }
-                }
-
-                return @reaching;
+                return $most_recent_def // (
+                    map { $get_reaching_definitions -> ($_, $line_number) }
+                    $def_use_analyzer -> {get_aliases} -> ($variable_name)
+                );
             };
 
             my $tracker = {
@@ -73,54 +51,42 @@ package Zarn::Component::Engine::TaintTracker {
                 is_tainted => sub {
                     my ($variable_name, $line_number) = @_;
 
-                    if (!$variable_name) {
-                        return 0;
-                    }
+                    return 0 if !$variable_name;
 
-                    my @reaching_defs = $get_reaching_definitions -> ($variable_name, $line_number);
+                    my ($def) = grep { $_ -> {tainted} }
+                        $get_reaching_definitions -> ($variable_name, $line_number);
 
-                    for my $def (@reaching_defs) {
-                        if ($is_definition_tainted -> ($def)) {
-                            return $def -> {location};
-                        }
-                    }
-
-                    return 0;
+                    return $def ? $def -> {location} : 0;
                 },
                 is_value_tainted => sub {
                     my ($value) = @_;
 
-                    if (!$value) {
-                        return 0;
-                    }
-
-                    if (ref $value ne 'ARRAY') {
-                        return 0;
-                    }
+                    return 0 if ref $value ne 'ARRAY';
 
                     for my $token (@{$value}) {
-                        if (!ref $token) {
-                            next;
-                        }
+                        next if !ref $token;
 
                         my $content = $token -> content();
 
-                        for my $source (keys %{$taint_sources}) {
-                            if ($content =~ /\Q$source\E/xms) {
-                                return 1;
-                            }
-                        }
+                        return 1 if any { $content =~ /\Q$_\E/xms } keys %{$taint_sources};
 
                         if ($token -> isa('PPI::Token::Symbol')) {
-                            for my $source (keys %{$taint_sources}) {
-                                my $base_var = $content;
-                                $base_var =~ s/\A[\$\@\%]//xms;
-                                $source =~ s/\A[\$\@\%]//xms;
+                            my $base_var = $content =~ s/\A[\$\@\%]//xmsr;
 
-                                if ($base_var eq $source) {
-                                    return 1;
-                                }
+                            return 1 if any {
+                                (my $src = $_) =~ s/\A[\$\@\%]//xms;
+                                $base_var eq $src
+                            } keys %{$taint_sources};
+
+                            next if exists $checking_taint -> {$base_var};
+
+                            $checking_taint -> {$base_var} = 1;
+                            my @defs = $def_use_analyzer -> {get_definitions} -> ($base_var);
+                            if (any { $_ -> {tainted} } @defs) {
+                                delete $checking_taint -> {$base_var};
+                                return 1;
                             }
+                            delete $checking_taint -> {$base_var};
                         }
 
                         if ($token -> isa('PPI::Structure::Subscript')) {
@@ -131,36 +97,9 @@ package Zarn::Component::Engine::TaintTracker {
                             }
                         }
 
-                        if ($token -> isa('PPI::Token::Symbol')) {
-                            my $var_name = $content;
-                            $var_name =~ s/\A[\$\@\%]//xms;
+                        return 1 if $token -> isa('PPI::Token::Quote::Double') && $content =~ /\$/xms;
 
-                            if (exists $checking_taint -> {$var_name}) {
-                                next;
-                            }
-
-                            $checking_taint -> {$var_name} = 1;
-
-                            my @defs = $def_use_analyzer -> {get_definitions} -> ($var_name);
-                            for my $def (@defs) {
-                                if ($def -> {tainted}) {
-                                    delete $checking_taint -> {$var_name};
-                                    return 1;
-                                }
-                            }
-
-                            delete $checking_taint -> {$var_name};
-                        }
-
-                        if ($token -> isa('PPI::Token::Quote::Double')) {
-                            if ($content =~ /\$/xms) {
-                                return 1;
-                            }
-                        }
-
-                        if ($token -> isa('PPI::Token::Operator') && $token -> content() ne q{=}) {
-                            return 1;
-                        }
+                        return 1 if $token -> isa('PPI::Token::Operator') && $token -> content() ne q{=};
                     }
 
                     return 0;

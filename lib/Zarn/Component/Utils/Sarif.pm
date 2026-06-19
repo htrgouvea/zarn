@@ -8,7 +8,7 @@ package Zarn::Component::Utils::Sarif {
         my ($self, @vulnerabilities) = @_;
 
         my $sarif_data = {
-            '$schema' => 'https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json', ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
+            "\N{DOLLAR SIGN}schema" => 'https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json',
             version   => '2.1.0',
             runs      => [{
                 tool    => {
