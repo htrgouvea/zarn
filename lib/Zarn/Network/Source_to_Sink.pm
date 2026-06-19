@@ -9,7 +9,7 @@ package Zarn::Network::Source_to_Sink {
 
     our $VERSION = '0.1.0';
 
-    sub new {
+    sub new { ## no critic (Subroutines::ProhibitExcessComplexity)
         my ($self, $parameters) = @_;
         my ($syntax_tree, $rules, $use_dataflow, $file, @results);
 

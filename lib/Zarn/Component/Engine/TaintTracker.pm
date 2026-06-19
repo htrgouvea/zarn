@@ -6,7 +6,7 @@ package Zarn::Component::Engine::TaintTracker {
 
     our $VERSION = '0.1.0';
 
-    sub new {
+    sub new { ## no critic (Subroutines::ProhibitExcessComplexity)
         my ($self, $parameters) = @_;
         my ($def_use_analyzer);
 
@@ -17,8 +17,8 @@ package Zarn::Component::Engine::TaintTracker {
 
         if ($def_use_analyzer) {
             my $taint_sources = {
-                '@ARGV'  => 1,
-                '$ENV'   => 1,
+                '@ARGV'  => 1, ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
+                '$ENV'   => 1, ## no critic (ValuesAndExpressions::RequireInterpolationOfMetachars)
                 q{STDIN}  => 1,
                 q{<>}     => 1,
                 q{param}  => 1,

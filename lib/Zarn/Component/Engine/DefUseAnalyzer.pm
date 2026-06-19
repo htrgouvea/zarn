@@ -5,7 +5,7 @@ package Zarn::Component::Engine::DefUseAnalyzer {
 
     our $VERSION = '0.1.0';
 
-    sub new {
+    sub new { ## no critic (Subroutines::ProhibitExcessComplexity)
         my ($self, $parameters) = @_;
         my ($syntax_tree);
 
