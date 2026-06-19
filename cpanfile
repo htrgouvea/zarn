@@ -1,4 +1,4 @@
-requires 'JSON',             '4.10';
+requires 'JSON',             '4.11';
 requires 'File::Find::Rule', '0.35';
 requires 'Getopt::Long',     '2.58';
 requires 'YAML::Tiny',       '1.76';
