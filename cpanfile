@@ -10,6 +10,6 @@ on 'test' => sub {
       requires 'Test::Exception', '0.43';
       requires 'File::Temp',      '0.2312';
       requires 'File::Path',      '2.18';
-      requires 'File::Spec',      '3.94';
+      requires 'File::Spec',      '3.75';
       requires 'File::Slurp',     '9999.32';
 };
