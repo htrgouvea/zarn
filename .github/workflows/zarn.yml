@@ -14,7 +14,7 @@ jobs:
   zarn:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Install Perl and cpanminus
       run: |
         sudo apt install -y make perl cpanminus
