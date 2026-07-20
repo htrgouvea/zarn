@@ -1,4 +1,4 @@
-FROM perl:5.42-slim
+FROM perl:5.44-slim
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends build-essential \
